@@ -3,6 +3,7 @@ import { employeeSchema, type TEmployeeFormValues } from "../schema/employee.sch
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createEmployee } from "../api/employee.api";
 import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 
 function useRegister() {
@@ -29,7 +30,14 @@ function useRegister() {
     const onSubmit = methods.handleSubmit((employee)=> {
         mutation.mutate(employee);
     })
-    return { ...methods, onSubmit, mutation };
+
+
+    const faces = methods.watch("faces");
+    const { isValid } = methods.formState;
+
+    const disableSubmit = !isValid || !faces || faces.length < 3;
+
+    return { ...methods, onSubmit, mutation, disableSubmit };
 }
 
 export default useRegister;

@@ -9,12 +9,12 @@ import { FilePreviewInput } from '../common';
 import useRegister from './hooks/useRegister';
 import type { TDepartment, TRole } from '@/constants';
 import { Roles, Departments } from '@/constants';
+import { useEffect } from 'react';
 
 
 
 const RegistrationForm = () => {
-    const { control, onSubmit, register, setValue, formState: { errors = {}} } = useRegister();
-
+    const { control, onSubmit, register, setValue, formState: { errors = {}} , disableSubmit } = useRegister();
 
     return (
         <form onSubmit={onSubmit} className="space-y-4">
@@ -105,7 +105,7 @@ const RegistrationForm = () => {
                 <Button type="button" variant="outline" >
                     Cancel
                 </Button>
-                <Button type="submit">Register Employee</Button>
+                <Button disabled={disableSubmit} type="submit">Register Employee</Button>
             </DialogFooter>
         </form>
     );
