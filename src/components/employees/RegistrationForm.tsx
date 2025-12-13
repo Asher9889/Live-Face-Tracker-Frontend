@@ -1,82 +1,66 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DialogFooter } from '@/components/ui/dialog';
+import { employeeSchema } from './schema/employee.schema';
+import { ZodLabelInput } from '../common/ZodLabelInput';
+import { FilePreviewInput } from '../common';
+import useRegister from './hooks/useRegister';
+import type { TDepartment, TRole } from '@/constants';
+import { Roles, Departments } from '@/constants';
 
-const employeeSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
-    employeeId: z.string().min(1, 'Employee ID is required'),
-    department: z.string().min(1, 'Department is required'),
-    phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-    role: z.string().min(1, 'Role is required'),
-});
 
-type EmployeeFormValues = z.infer<typeof employeeSchema>;
 
-interface RegistrationFormProps {
-    onSubmit: (data: EmployeeFormValues) => void;
-    onCancel: () => void;
-}
+const RegistrationForm = () => {
+    const { control, onSubmit, register, setValue, formState: { errors = {}} } = useRegister();
 
-const RegistrationForm = ({ onSubmit, onCancel }: RegistrationFormProps) => {
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        formState: { errors },
-    } = useForm<EmployeeFormValues>({
-        resolver: zodResolver(employeeSchema),
-    });
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">
+        <form onSubmit={onSubmit} className="space-y-4">
+            <div className="grid gap-4 w-full max-h-[calc(100vh-300px)] py-4 overflow-y-auto px-3">
+                <div className="flex flex-col gap-2">
+                    <ZodLabelInput schema={employeeSchema} name="name" className="text-left">
                         Name
-                    </Label>
-                    <div className="col-span-3">
-                        <Input id="name" {...register('name')} />
+                    </ZodLabelInput>
+                    <div>
+                        <Input id="name" {...register('name')}  className=''/>
                         {errors.name && (
                             <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
                         )}
                     </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="employeeId" className="text-right">
-                        ID
-                    </Label>
-                    <div className="col-span-3">
-                        <Input id="employeeId" {...register('employeeId')} />
-                        {errors.employeeId && (
-                            <p className="text-xs text-red-500 mt-1">{errors.employeeId.message}</p>
+
+                <div className="flex flex-col gap-2">
+                    <ZodLabelInput schema={employeeSchema} name="email" className="text-left">
+                        Email
+                    </ZodLabelInput>
+                    <div>
+                        <Input id="email" type="email" {...register('email')} />
+                        {errors.email && (
+                            <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
                         )}
                     </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="department" className="text-right">
-                        Dept
-                    </Label>
-                    <div className="col-span-3">
-                        <Select onValueChange={(val) => setValue('department', val)}>
+
+                <div className="flex flex-col gap-2">
+                    <ZodLabelInput schema={employeeSchema} name="department" className="text-left">
+                        Department
+                    </ZodLabelInput>
+                    <div>
+                        <Select onValueChange={(val:TDepartment) => setValue('department', val)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select department" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="engineering">Engineering</SelectItem>
-                                <SelectItem value="hr">HR</SelectItem>
-                                <SelectItem value="marketing">Marketing</SelectItem>
-                                <SelectItem value="operations">Operations</SelectItem>
+                                <SelectGroup>
+                                    <SelectLabel className='text-xs font-medium text-muted-foreground'>Departments</SelectLabel>
+                                    {
+                                        Departments.map((dep, index) => (
+                                            <SelectItem key={index} value={dep}>{dep}</SelectItem>
+                                        ))
+                                    }
+                                </SelectGroup>
                             </SelectContent>
                         </Select>
                         {errors.department && (
@@ -84,31 +68,24 @@ const RegistrationForm = ({ onSubmit, onCancel }: RegistrationFormProps) => {
                         )}
                     </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="phone" className="text-right">
-                        Phone
-                    </Label>
-                    <div className="col-span-3">
-                        <Input id="phone" {...register('phone')} />
-                        {errors.phone && (
-                            <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
-                        )}
-                    </div>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="role" className="text-right">
+
+                <div className="flex flex-col gap-2">
+                    <ZodLabelInput schema={employeeSchema} name="role" className="text-left">
                         Role
-                    </Label>
-                    <div className="col-span-3">
-                        <Select onValueChange={(val) => setValue('role', val)}>
+                    </ZodLabelInput>
+                    <div>
+                        <Select onValueChange={(val: TRole) => setValue('role', val)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select role" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="admin">Admin</SelectItem>
-                                <SelectItem value="manager">Manager</SelectItem>
-                                <SelectItem value="employee">Employee</SelectItem>
-                                <SelectItem value="intern">Intern</SelectItem>
+                                <SelectGroup>
+                                    <SelectLabel className='text-xs text-left font-medium text-muted-foreground'>Roles</SelectLabel>
+                                    
+                                    {Roles.map((role, index) => (
+                                        <SelectItem key={index} value={role}>{role}</SelectItem>
+                                    ))}
+                                </SelectGroup>
                             </SelectContent>
                         </Select>
                         {errors.role && (
@@ -116,9 +93,16 @@ const RegistrationForm = ({ onSubmit, onCancel }: RegistrationFormProps) => {
                         )}
                     </div>
                 </div>
+
+                <div className="flex flex-col gap-2">
+                    <ZodLabelInput schema={employeeSchema} name="faces" className="text-left">
+                        Face Images
+                    </ZodLabelInput>
+                    <FilePreviewInput name="faces" control={control} />
+                </div>
             </div>
             <DialogFooter>
-                <Button type="button" variant="outline" onClick={onCancel}>
+                <Button type="button" variant="outline" >
                     Cancel
                 </Button>
                 <Button type="submit">Register Employee</Button>

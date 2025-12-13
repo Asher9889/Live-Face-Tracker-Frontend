@@ -13,11 +13,10 @@ const MainLayout = () => {
             <Navbar />
             <main
                 className={cn(
-                    "pt-16 min-h-screen transition-all duration-300 p-6",
-                    isSidebarOpen ? "pl-64" : "pl-16"
+                    "pt-16 min-h-screen transition-all duration-300 p-6", isSidebarOpen ? "pl-64" : "pl-16"
                 )}
             >
-                <div className="max-w-7xl mx-auto">
+                <div className="max-w-7xl px-4 mx-auto mt-10 py-4">
                     <Outlet />
                 </div>
             </main>

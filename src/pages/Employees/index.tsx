@@ -15,11 +15,6 @@ import { Plus } from 'lucide-react';
 const Employees = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const handleRegister = (data: any) => {
-        console.log("Registering employee:", data);
-        setIsDialogOpen(false);
-    };
-
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -31,17 +26,14 @@ const Employees = () => {
                             Add Employee
                         </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className='max-w-xl'>
                         <DialogHeader>
                             <DialogTitle>Register New Employee</DialogTitle>
                             <DialogDescription>
                                 Add a new employee to the system. This will also register their face for recognition.
                             </DialogDescription>
                         </DialogHeader>
-                        <RegistrationForm
-                            onSubmit={handleRegister}
-                            onCancel={() => setIsDialogOpen(false)}
-                        />
+                        <RegistrationForm />
                     </DialogContent>
                 </Dialog>
             </div>
