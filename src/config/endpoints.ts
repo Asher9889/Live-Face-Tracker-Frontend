@@ -3,6 +3,10 @@ const endPoints = {
         register: {
             url: '/employees',
             method: 'POST'
+        },
+        get: {
+            url: '/employees',
+            method: 'GET'
         }
     }
 }

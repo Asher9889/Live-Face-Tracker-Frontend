@@ -6,15 +6,15 @@ import { DialogFooter } from '@/components/ui/dialog';
 import { employeeSchema } from './schema/employee.schema';
 import { ZodLabelInput } from '../common/ZodLabelInput';
 import { FilePreviewInput } from '../common';
-import useRegister from './hooks/useRegister';
+import { useRegister } from './hooks/useRegister';
 import type { TDepartment, TRole } from '@/constants';
 import { Roles, Departments } from '@/constants';
-import { useEffect } from 'react';
+import { Spinner } from '../ui/spinner';
 
 
 
 const RegistrationForm = () => {
-    const { control, onSubmit, register, setValue, formState: { errors = {}} , disableSubmit } = useRegister();
+    const { control, onSubmit, register, setValue, formState: { errors = {}} , mutation, reset } = useRegister();
 
     return (
         <form onSubmit={onSubmit} className="space-y-4">
@@ -101,11 +101,17 @@ const RegistrationForm = () => {
                     <FilePreviewInput name="faces" control={control} />
                 </div>
             </div>
+            {
+                mutation.error && (
+                    <p className="text-xs text-red-500 mt-1">{mutation.error.message}</p>
+                )   
+            }
+            
             <DialogFooter>
-                <Button type="button" variant="outline" >
+                <Button disabled={mutation.isPending} onClick={() => reset()} type="button" variant="outline" >
                     Cancel
                 </Button>
-                <Button disabled={disableSubmit} type="submit">Register Employee</Button>
+                <Button className='w-44' disabled={mutation.isPending} type="submit">{mutation.isPending ? <Spinner /> : 'Register Employee'}</Button>
             </DialogFooter>
         </form>
     );

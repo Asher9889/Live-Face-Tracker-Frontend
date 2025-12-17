@@ -9,18 +9,16 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
+import { useEmployee } from "./hooks/useRegister";
 
 const EmployeeList = () => {
     // Mock data
-    const employees = Array.from({ length: 8 }).map((_, i) => ({
-        id: i.toString(),
-        name: `Employee ${i + 1}`,
-        employeeId: `EMP-${1000 + i}`,
-        department: ['Engineering', 'HR', 'Marketing', 'Operations'][i % 4],
-        role: ['Admin', 'Manager', 'Employee', 'Intern'][i % 4],
-        phone: `+1 555-010${i}`,
-        image: `https://i.pravatar.cc/150?u=${i + 50}`,
-    }));
+
+    const { data: employees, isLoading, isError, error } = useEmployee();
+
+    console.log("employees is", employees)
+    if (isLoading) return <p>Loading...</p>;
+    if (isError) return <p>{error.message}</p>;
 
     return (
         <div className="rounded-md border">
@@ -36,7 +34,7 @@ const EmployeeList = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {employees.map((employee) => (
+                    {employees.map((employee:any) => (
                         <TableRow key={employee.id}>
                             <TableCell className="flex items-center gap-3">
                                 <Avatar>

@@ -7,13 +7,18 @@ const CameraGrid = () => {
     const [layout, setLayout] = useState<1 | 2 | 3 | 4>(2);
 
     // Mock cameras
-    const cameras = Array.from({ length: 3 }).map((_, i) => ({
-        id: `cam-${i}`,
-        name: `Camera ${i + 1}`,
-        url: `ws://localhost:4500/?cameraId=entry_${i + 1}`,
-        status: (i === 4 ? 'offline' : 'online') as 'online' | 'offline' | 'error',
-        fps: 24,
-    }));
+    // const cameras = Array.from({ length: 3 }).map((_, i) => ({
+    //     id: `cam-${i}`,
+    //     name: `Camera ${i + 1}`,
+    //     url: `ws://localhost:4500/?cameraId=entry_${i + 1}`,
+    //     status: (i === 4 ? 'offline' : 'online') as 'online' | 'offline' | 'error',
+    //     fps: 24,
+    // }));
+    const cameras = [
+        { id: "entry_1", name: "Entry Gate 1", status: "online" as 'online' | 'offline' | 'error' },
+        // { id: "entry_2", name: "Exit Gate", status: "online" as 'online' | 'offline' | 'error' },
+        // { id: "entry_3", name: "Parking", status: "offline" as 'online' | 'offline' | 'error' },
+    ];
 
     const gridCols = {
         1: 'grid-cols-1',

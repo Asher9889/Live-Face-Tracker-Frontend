@@ -3,7 +3,7 @@ import type { TEmployeeFormValues } from "../schema/employee.schema";
 import endPoints from "@/config/endpoints";
 
 const createEmployee = async (employee: TEmployeeFormValues) => {
-        console.log("Employee data:", employee);
+    try {
         const fd = new FormData();
         fd.append("name", employee.name);
         fd.append("email", employee.email);
@@ -18,7 +18,23 @@ const createEmployee = async (employee: TEmployeeFormValues) => {
             data: fd,
         });
         return response.data;
-    
+    } catch (err: any) {
+        const backendMessage = err.response?.data?.message || err.response?.data?.error || "Something went wrong. Please try again.";
+        throw new Error(backendMessage);
+    }
+
 };
 
-export { createEmployee };
+const getEmployee = async () => {
+    try {
+        const response = await api.request({
+            url: endPoints.employee.get.url,
+            method: endPoints.employee.get.method,
+        })
+        return response.data?.data ?? [];
+    } catch (err: any) {
+        throw new Error(err.response?.data?.message || err.response?.data?.error || "Failed to fetch employees");
+    }
+}
+
+export { createEmployee, getEmployee };

@@ -4,8 +4,8 @@ import { z } from 'zod';
 export const employeeSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
     email: z.email({ error: ' Provide valid email address' }),
-    department: z.enum(Departments),
-    role: z.enum(Roles),
+    department: z.enum(Departments, {error: `Please select a department`}),
+    role: z.enum(Roles, {error: `Please select a role`}),
     faces: z
         .custom<File[]>()
         .refine((files) => files?.length > 0, 'Please select at least three face image')
