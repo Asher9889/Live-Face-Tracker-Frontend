@@ -8,7 +8,19 @@ const endPoints = {
             url: '/employees',
             method: 'GET'
         }
+    },
+ camera: {
+        create: {
+            url: '/cameras',
+            method: 'POST'
+        },
+        get: {
+            url: '/cameras',
+            method: 'GET'
+        }
     }
+
+
 }
 
 export default endPoints;
