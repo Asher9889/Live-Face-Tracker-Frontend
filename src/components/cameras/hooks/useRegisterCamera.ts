@@ -18,8 +18,11 @@ function useRegisterCamera(onSuccess?: () => void) {
         password: "",
       },
     },
-    mode: "onChange",
-    reValidateMode: "onChange",
+    // mode: "onChange",
+    // reValidateMode: "onChange",
+    mode: "onSubmit",
+reValidateMode: "onSubmit",
+
   });
 
   const mutation = useMutation({

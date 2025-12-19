@@ -18,19 +18,42 @@ const CameraRegistrationForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-            <div className="grid gap-4 w-full max-h-[calc(100vh-300px)] py-4 overflow-y-auto px-3">
-                <div className="flex flex-col gap-2">
+      <div className="grid gap-4 w-full max-h-[calc(100vh-300px)] py-4 overflow-y-auto px-3">
+        <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="name">Name</ZodLabelInput>
           <Input {...register("name")} />
           {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
         </div>
 
-                <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="code">Code</ZodLabelInput>
           <Input {...register("code")} />
+          {errors.code && (
+            <p className="text-xs text-red-500">{errors.code.message}</p>
+          )}
+        </div> */}
+
+        <div className="flex flex-col gap-2">
+          <ZodLabelInput schema={cameraSchema} name="code">
+            Code
+          </ZodLabelInput>
+
+          <Input
+            {...register("code", {
+              setValueAs: (value) =>
+                typeof value === "string" ? value.toLowerCase() : value,
+            })}
+          />
+
+          {errors.code && (
+            <p className="text-xs text-red-500">
+              {errors.code.message}
+            </p>
+          )}
         </div>
 
-                <div className="flex flex-col gap-2">
+
+        <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="gateType">Gate Type</ZodLabelInput>
           <Select onValueChange={(val) => setValue("gateType", val as any)}>
             <SelectTrigger>
@@ -41,26 +64,50 @@ const CameraRegistrationForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               <SelectItem value="EXIT">EXIT</SelectItem>
             </SelectContent>
           </Select>
+          {errors.gateType && (
+            <p className="text-xs text-red-500">{errors.gateType.message}</p>
+          )}
+
         </div>
 
-                <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="location">Location</ZodLabelInput>
           <Input {...register("location")} />
+          {errors.location && (
+            <p className="text-xs text-red-500">{errors.location.message}</p>
+          )}
+
         </div>
 
         < div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="rtspUrl">RTSP URL</ZodLabelInput>
           <Input {...register("rtspUrl")} />
+          {errors.rtspUrl && (
+            <p className="text-xs text-red-500">{errors.rtspUrl.message}</p>
+          )}
+
         </div>
 
         <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="credentials.username">Username</ZodLabelInput>
           <Input {...register("credentials.username")} />
+          {errors.credentials?.username && (
+            <p className="text-xs text-red-500">
+              {errors.credentials.username.message}
+            </p>
+          )}
+
         </div>
 
         <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="credentials.password">Password</ZodLabelInput>
           <Input type="password" {...register("credentials.password")} />
+          {errors.credentials?.password && (
+            <p className="text-xs text-red-500">
+              {errors.credentials.password.message}
+            </p>
+          )}
+
         </div>
       </div>
 

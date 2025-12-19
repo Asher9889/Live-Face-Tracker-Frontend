@@ -5,9 +5,12 @@ export const cameraSchema = z.object({
     .string()
     .min(2, "Camera name must be at least 2 characters"),
 
-  code: z
-    .string()
-    .min(2, "Camera code is required"),
+ code: z
+  .string()
+  .min(2, "Camera code must be at least 2 characters")
+  .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers and underscore allowed")
+  .transform((val) => val.toLowerCase()),
+
 
   gateType: z.enum(["ENTRY", "EXIT"], {
     error: "Please select a gate type",
@@ -15,14 +18,15 @@ export const cameraSchema = z.object({
 
   location: z
     .string()
-    .min(2, "Location is required"),
-
+    .min(5, "Location is required"),
+   
   rtspUrl: z
     .string()
     .min(10, "RTSP URL is required")
     .refine(
-      (url) => url.startsWith("rtsp://"),
-      "RTSP URL must start with rtsp://"
+      (url) => url.startsWith("rtsp://") &&
+        /^rtsp:\/\/[^\s/$.?#].[^\s]*$/i.test(url),
+      "Invalid RTSP URL format"
     ),
 
   credentials: z.object({
