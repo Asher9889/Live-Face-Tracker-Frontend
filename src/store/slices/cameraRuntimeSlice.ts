@@ -1,13 +1,5 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-
-type TCameraRuntimeStatus = "online" | "offline" | "connecting" | "error";
-
-interface ICameraRuntime {
-    code: string;
-    status: TCameraRuntimeStatus;
-    fps: number;
-    lastFrameAt: number
-}
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ICameraRuntime } from '@/types/camera';
 
 interface CameraState {
     byCode: Record<string, ICameraRuntime>

@@ -6,7 +6,9 @@ import { Provider } from 'react-redux'
 import { store } from './store'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from "@/components/common/ThemeProvider"
+import appBootstrap from './bootstrap/appBootstrap.ts'
 
+appBootstrap();
 
 const queryClient = new QueryClient()
 
