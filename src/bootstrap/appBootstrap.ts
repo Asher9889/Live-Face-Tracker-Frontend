@@ -1,4 +1,5 @@
 import { api } from "@/config"
+import { initCameraStatusWS } from "@/services";
 import { store } from "@/store";
 import { bootstrapFailed, bootstrapStarted, bootstrapSucceeded } from "@/store/slices/bootstrapSlice";
 import { registerAll } from "@/store/slices/cameraEntitySlice";
@@ -20,6 +21,9 @@ export default async function appBootstrap(){
                 lastFrameAt: cam.lastFrameAt,
             }));
         })
+
+        initCameraStatusWS();
+        
         store.dispatch(bootstrapSucceeded());
     } catch (error: any) {
         if(error.response){
@@ -28,6 +32,7 @@ export default async function appBootstrap(){
             store.dispatch(bootstrapFailed(error.response.data.message))
         } else {
             console.error('Error message:', error.message)
+            bootstrapFailed(error.message)
         }
     }
 

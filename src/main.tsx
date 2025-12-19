@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from "@/components/common/ThemeProvider"
 import appBootstrap from './bootstrap/appBootstrap.ts'
 
-appBootstrap();
+await appBootstrap().catch((err) => console.log(err));
 
 const queryClient = new QueryClient()
 

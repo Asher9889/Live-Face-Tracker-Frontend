@@ -2,23 +2,29 @@ import { useState } from 'react';
 import { Grid2X2, Grid3X3, LayoutGrid, Square } from 'lucide-react';
 import LiveCameraCard from './LiveCameraCard';
 import { cn } from '@/utils/cn';
+import { useAppSelector } from "@/store/hooks";
+
 
 const CameraGrid = () => {
     const [layout, setLayout] = useState<1 | 2 | 3 | 4>(2);
 
-    // Mock cameras
-    // const cameras = Array.from({ length: 3 }).map((_, i) => ({
-    //     id: `cam-${i}`,
-    //     name: `Camera ${i + 1}`,
-    //     url: `ws://localhost:4500/?cameraId=entry_${i + 1}`,
-    //     status: (i === 4 ? 'offline' : 'online') as 'online' | 'offline' | 'error',
-    //     fps: 24,
-    // }));
-    const cameras = [
-        { id: "entry_1", name: "Entry Gate 1", status: "online" as 'online' | 'offline' | 'error' },
-        // { id: "entry_2", name: "Exit Gate", status: "online" as 'online' | 'offline' | 'error' },
-        // { id: "entry_3", name: "Parking", status: "offline" as 'online' | 'offline' | 'error' },
-    ];
+    const cameras = useAppSelector((state) => state.cameraEntity.ids.map((code) => {
+       const cam = state.cameraEntity.byCode[code];
+       const runtime = state.cameraRuntime.byCode[code];
+
+       return {
+            code: cam.code,
+            name: cam.name,
+            location: cam.location,
+            status: runtime?.status ?? "offline",
+        };
+    }))
+    // const cameras = [
+    //     { id: "entry_1", name: "Entry Gate 1", status: "online" as 'online' | 'offline' | 'error' },
+    //     { id: "exit_1", name: "Exit Gate 1", status: "online" as 'online' | 'offline' | 'error' },
+    //     // { id: "entry_2", name: "Exit Gate", status: "online" as 'online' | 'offline' | 'error' },
+    //     // { id: "entry_3", name: "Parking", status: "offline" as 'online' | 'offline' | 'error' },
+    // ];
 
     const gridCols = {
         1: 'grid-cols-1',
@@ -61,7 +67,7 @@ const CameraGrid = () => {
 
             <div className={cn("grid gap-4", gridCols[layout])}>
                 {cameras.map((cam) => (
-                    <LiveCameraCard key={cam.id} camera={cam} />
+                    <LiveCameraCard key={cam.code} camera={cam} />
                 ))}
             </div>
         </div>
