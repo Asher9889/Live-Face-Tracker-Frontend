@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DialogFooter } from "@/components/ui/dialog";
 import { ZodLabelInput } from "../common/ZodLabelInput";
 import { cameraSchema } from "./schema/camera.schema";
@@ -12,8 +12,9 @@ const CameraRegistrationForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     register,
     onSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors ={} },
     mutation,
+    reset
   } = useRegisterCamera(onSuccess);
 
   return (
@@ -21,8 +22,10 @@ const CameraRegistrationForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       <div className="grid gap-4 w-full max-h-[calc(100vh-300px)] py-4 overflow-y-auto px-3">
         <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="name">Name</ZodLabelInput>
-          <Input {...register("name")} />
-          {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
+        <div>
+          <Input id="name" {...register("name")} />
+          {errors.name && <p className="text-xs text-red-500 mt-1" >{errors.name.message}</p>}
+        </div>
         </div>
 
         {/* <div className="flex flex-col gap-2">
@@ -37,12 +40,9 @@ const CameraRegistrationForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           <ZodLabelInput schema={cameraSchema} name="code">
             Code
           </ZodLabelInput>
-
-          <Input
-            {...register("code", {
-              setValueAs: (value) =>
-                typeof value === "string" ? value.toLowerCase() : value,
-            })}
+          <div>
+          <Input id="code"
+            {...register("code")}
           />
 
           {errors.code && (
@@ -50,64 +50,73 @@ const CameraRegistrationForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               {errors.code.message}
             </p>
           )}
+          </div>
         </div>
 
 
         <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="gateType">Gate Type</ZodLabelInput>
-          <Select onValueChange={(val) => setValue("gateType", val as any)}>
+          <div>
+          <Select onValueChange={(val) => setValue("gateType", val as "ENTRY" | "EXIT")}>
             <SelectTrigger>
               <SelectValue placeholder="Select gate type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ENTRY">ENTRY</SelectItem>
-              <SelectItem value="EXIT">EXIT</SelectItem>
+              <SelectGroup>
+                <SelectLabel className='text-xs font-medium text-muted-foreground'>Gate type</SelectLabel>
+                <SelectItem value="ENTRY">Entry</SelectItem>
+                <SelectItem value="EXIT">Exit</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
           {errors.gateType && (
-            <p className="text-xs text-red-500">{errors.gateType.message}</p>
+            <p className="text-xs mt-1 text-red-500">{errors.gateType.message}</p>
           )}
-
+          </div>
         </div>
 
         <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="location">Location</ZodLabelInput>
-          <Input {...register("location")} />
+        <div>
+          <Input id="location" {...register("location")} />
           {errors.location && (
-            <p className="text-xs text-red-500">{errors.location.message}</p>
+            <p className="text-xs mt-1 text-red-500">{errors.location.message}</p>
           )}
-
+        </div>
         </div>
 
         < div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="rtspUrl">RTSP URL</ZodLabelInput>
-          <Input {...register("rtspUrl")} />
+         <div>
+          <Input id="rtspurl" {...register("rtspUrl")} />
           {errors.rtspUrl && (
-            <p className="text-xs text-red-500">{errors.rtspUrl.message}</p>
+            <p className="text-xs mt-1 text-red-500">{errors.rtspUrl.message}</p>
           )}
-
+          </div>
         </div>
 
         <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="credentials.username">Username</ZodLabelInput>
-          <Input {...register("credentials.username")} />
+         <div>
+          <Input id="username" {...register("credentials.username")} />
           {errors.credentials?.username && (
             <p className="text-xs text-red-500">
               {errors.credentials.username.message}
             </p>
           )}
-
+        </div>
         </div>
 
         <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="credentials.password">Password</ZodLabelInput>
-          <Input type="password" {...register("credentials.password")} />
+        <div>
+          <Input id="password" type="password" {...register("credentials.password")} />
           {errors.credentials?.password && (
             <p className="text-xs text-red-500">
               {errors.credentials.password.message}
             </p>
           )}
-
+           </div>
         </div>
       </div>
 
@@ -116,9 +125,11 @@ const CameraRegistrationForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       )}
 
       <DialogFooter>
-        <Button type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? <Spinner /> : "Add Camera"}
-        </Button>
+         <Button disabled={mutation.isPending} onClick={() => reset()} type="button" variant="outline" >
+                    Cancel
+                </Button>
+      <Button className='w-44' disabled={mutation.isPending} type="submit">{mutation.isPending ? <Spinner /> : 'Register Camera'}</Button>
+
       </DialogFooter>
     </form>
   );

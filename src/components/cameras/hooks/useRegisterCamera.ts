@@ -10,7 +10,7 @@ function useRegisterCamera(onSuccess?: () => void) {
     defaultValues: {
       name: "",
       code: "",
-      gateType: "ENTRY",
+      //gateType: "",
       location: "",
       rtspUrl: "",
       credentials: {
@@ -18,10 +18,8 @@ function useRegisterCamera(onSuccess?: () => void) {
         password: "",
       },
     },
-    // mode: "onChange",
-    // reValidateMode: "onChange",
-    mode: "onSubmit",
-reValidateMode: "onSubmit",
+    mode: "onChange",
+    reValidateMode: "onChange",
 
   });
 

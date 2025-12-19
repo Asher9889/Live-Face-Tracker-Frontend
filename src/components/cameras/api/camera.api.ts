@@ -5,10 +5,19 @@ import type { TCameraFormValues } from "../schema/camera.schema";
 
 const createCamera = async (camera: TCameraFormValues) => {
   try {
+
+    const fd = new FormData();
+    fd.append("name", camera.name);
+    fd.append("code", camera.code);
+    fd.append("gateType", camera.gateType);
+    fd.append("location", camera.location);
+    fd.append("rtspUrl", camera.rtspUrl);
+    fd.append("username", camera.credentials.username);
+    fd.append("password", camera.credentials.password);
     const response = await api.request({
-      url: endPoints.camera.create.url,
-      method: endPoints.camera.create.method,
-      data: camera,
+      url: endPoints.camera.register.url,
+      method: endPoints.camera.register.method,
+      data: fd,
     });
 
     return response.data;

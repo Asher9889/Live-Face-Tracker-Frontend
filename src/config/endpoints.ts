@@ -10,7 +10,7 @@ const endPoints = {
         }
     },
  camera: {
-        create: {
+        register: {
             url: '/cameras',
             method: 'POST'
         },
