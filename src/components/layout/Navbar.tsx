@@ -2,6 +2,7 @@ import { Bell, Menu, User } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar } from '@/store/slices/uiSlice';
 import { cn } from '@/utils/cn';
+import { ModeToggle } from '../common/ModeToggle';
 
 const Navbar = () => {
     const dispatch = useAppDispatch();
@@ -25,6 +26,7 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center gap-4">
+                <ModeToggle />
                 <button className="p-2 hover:bg-accent rounded-full relative">
                     <Bell className="h-5 w-5" />
                     <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-destructive rounded-full animate-pulse" />

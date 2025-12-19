@@ -10,7 +10,7 @@ const Dashboard = () => {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+                <h2 className="text-3xl font-bold text-primary tracking-tight">Dashboard</h2>
                 <div className="flex items-center gap-2">
                     <Button>Download Report</Button>
                 </div>
@@ -19,10 +19,10 @@ const Dashboard = () => {
             <StatsCards />
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-4">
-                    <CardHeader>
+                <Card className="col-span-4 p-4">
+                    {/* <CardHeader>
                         <CardTitle>Live Monitoring</CardTitle>
-                    </CardHeader>
+                    </CardHeader> */}
                     <CardContent className="pl-2">
                         <CameraGrid />
                     </CardContent>

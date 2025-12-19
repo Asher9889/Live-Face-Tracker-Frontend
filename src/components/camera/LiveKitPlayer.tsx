@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { ConnectionState, Room, RoomEvent, Track } from "livekit-client";
 import { calculateFPS } from "@/utils";
+import { envs } from "@/config";
 
 type Props = {
   cameraId: string;
   setCameraLiveStatus: (metaData: any) => void;
 };
-
-const LIVEKIT_URL = "wss://livekit.mssplonline.in";
 
 export default function LiveKitPlayer({ cameraId, setCameraLiveStatus }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -70,19 +69,8 @@ export default function LiveKitPlayer({ cameraId, setCameraLiveStatus }: Props) 
             track.on("ended", () => clearInterval(statsInterval));
           }
         });
-
-        room.on(RoomEvent.ConnectionStateChanged, (state) => {
-            if(state === ConnectionState.Connected) {
-                setCameraStatus("online");
-            } else if (state === ConnectionState.Disconnected) {
-                setCameraStatus("offline");
-            } else if (state === ConnectionState.Connecting){
-                setCameraStatus("connecting");
-            }
-        })
-
         // 4️⃣ Connect to LiveKit
-        await room.connect(LIVEKIT_URL, token);
+        await room.connect(envs.liveKitUrl, token);
 
         if (!mounted) room.disconnect();
       } catch (err: any) {

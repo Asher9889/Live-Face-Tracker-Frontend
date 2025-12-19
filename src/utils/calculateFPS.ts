@@ -1,9 +1,8 @@
 let lastFramesDecoded = 0;
 let lastTimestamp = 0;
+let fps = 0;
 
-export default function calculateFPS(stats: RTCStatsReport) {
-  let fps = 0;
-  
+export default function calculateFPS(stats: RTCStatsReport) {  
   stats.forEach((report) => {
     // We look for 'inbound-rtp' which contains video decoding stats
     if (report.type === 'inbound-rtp' && report.kind === 'video') {
