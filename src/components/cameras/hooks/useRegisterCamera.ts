@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery ,useQueryClient } from "@tanstack/react-query";
 import { cameraSchema, type TCameraFormValues } from "../schema/camera.schema"
 import { createCamera, getCamera } from "../api/camera.api";
 
@@ -22,11 +22,14 @@ function useRegisterCamera(onSuccess?: () => void) {
     reValidateMode: "onChange",
 
   });
-
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: createCamera,
     onSuccess: () => {
-      methods.reset();        
+      methods.reset();
+       queryClient.invalidateQueries({
+      queryKey: ["cameras"],
+    });        
       onSuccess?.();         
     },
     onError: (error) => {
@@ -39,7 +42,7 @@ function useRegisterCamera(onSuccess?: () => void) {
   });
 
   const { isValid } = methods.formState;
-
+ 
   const disableSubmit = !isValid;
 
   return {
