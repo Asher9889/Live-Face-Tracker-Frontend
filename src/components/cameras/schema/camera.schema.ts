@@ -35,10 +35,53 @@ export const cameraSchema = z.object({
       .string({error: "Password is required"})
       .min(1, "Password cannot be empty"),
   }),
+  streamConfig: z.object({
+    aiFps: z
+      .number({error: "AI FPS must be a number"})
+      .min(2, "AI FPS must be at least 2"),
+    displayFps: z
+      .number({error: "Display FPS must be a number"})
+      .min(2, "Display FPS must be at least 2"),
+  }).optional(),
+  enabled: z.boolean().optional(),
+  roi: z.object({
+    enabled: z.boolean().optional(),
+    polygons: z.array(z.array(z.number())).optional(),
+  }).optional(),
+  wsStreamId: z.string().optional(),
+  status: z.object({
+    online: z.boolean().optional(),
+    lastCheckedAt: z.string().optional(),
+    lastFrameAt: z.string().optional(),
+  }).optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
-/**
- * 🔹 Type inference
- * Used in form, hook, API
- */
 export type TCameraFormValues = z.infer<typeof cameraSchema>;
+
+
+
+// "streamConfig": {
+//     "aiFps": 25,
+//     "displayFps": 25
+//   },
+//   "enabled": true,
+//   "roi": {
+//     "enabled": true,
+//     "polygons": [
+//       [10, 20],
+//       [200, 20],
+//       [200, 250],
+//       [10, 250]
+//     ]
+//   },
+//   "wsStreamId": "exit_1",
+//   "status": {
+//     "online": true,
+//     "lastCheckedAt": "2025-01-01T10:00:00.000Z",
+//     "lastFrameAt": "2025-01-01T10:00:01.000Z"
+//   }
+// //   "createdAt": "2025-01-01T09:00:00.000Z",
+// //   "updatedAt": "2025-01-01T09:00:00.000Z"
+// }

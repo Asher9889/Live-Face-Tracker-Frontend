@@ -128,7 +128,7 @@ const CameraRegistrationForm = ({ onSuccess }: { onSuccess?: () => void }) => {
          <Button disabled={mutation.isPending} onClick={() => reset()} type="button" variant="outline" >
                     Cancel
                 </Button>
-      <Button className='w-44' disabled={mutation.isPending} type="submit">{mutation.isPending ? <Spinner /> : 'Register Camera'}</Button>
+      <Button className='gap-4 mb-4' disabled={mutation.isPending} type="submit">{mutation.isPending ? <Spinner /> : 'Register Camera'}</Button>
 
       </DialogFooter>
     </form>

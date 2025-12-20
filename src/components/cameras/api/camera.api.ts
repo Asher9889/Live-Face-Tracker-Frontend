@@ -2,22 +2,49 @@ import api from "@/config/axios";
 import endPoints from "@/config/endpoints";
 import type { TCameraFormValues } from "../schema/camera.schema";
 
-
 const createCamera = async (camera: TCameraFormValues) => {
   try {
+    const payload = {
+      name: camera.name,
+      code: camera.code,
+      gateType: camera.gateType,
+      location: camera.location,
+      rtspUrl: camera.rtspUrl,
+      credentials: {
+        username: camera.credentials.username,
+        password: camera.credentials.password,
+      },
 
-    const fd = new FormData();
-    fd.append("name", camera.name);
-    fd.append("code", camera.code);
-    fd.append("gateType", camera.gateType);
-    fd.append("location", camera.location);
-    fd.append("rtspUrl", camera.rtspUrl);
-    fd.append("username", camera.credentials.username);
-    fd.append("password", camera.credentials.password);
+      streamConfig: {
+        aiFps: 25,
+        displayFps: 25,
+      },
+
+      enabled: true,
+
+      roi: {
+        enabled: true,
+        polygons: [
+          [10, 20],
+          [200, 20],
+          [200, 250],
+          [10, 250],
+        ],
+      },
+
+      wsStreamId: camera.code,
+
+      status: {
+        online: true,
+        lastCheckedAt: new Date(),
+        lastFrameAt: new Date()
+      },
+    };
+
     const response = await api.request({
       url: endPoints.camera.register.url,
       method: endPoints.camera.register.method,
-      data: fd,
+      data: payload, 
     });
 
     return response.data;
