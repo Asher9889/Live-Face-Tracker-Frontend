@@ -4,7 +4,9 @@ interface ICameraRuntime {
     code: string;
     status: TCameraRuntimeStatus;
     lastFrameAt: number
+    streamStartTs?: number
     fps?: number;
+
 }
 
 interface IRuntimeCameraStatus {
@@ -12,6 +14,7 @@ interface IRuntimeCameraStatus {
     status: string;
     lastFrameAt: number;
     stoppedAt: number;
+    streamStartTs?: number;
 }
 
 export type {  IRuntimeCameraStatus, TCameraRuntimeStatus, ICameraRuntime }

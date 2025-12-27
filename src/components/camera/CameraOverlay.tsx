@@ -1,49 +1,80 @@
-import { motion } from 'framer-motion';
-
-export interface BoundingBox {
-    id: string;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    label: string;
-    confidence: number;
-    isKnown: boolean;
-}
+import { useEffect, useRef } from "react";
 
 interface CameraOverlayProps {
-    boxes: BoundingBox[];
+  cameraCode: string;
+  videoRef?: React.RefObject<HTMLVideoElement | null>;
+  bboxRef?: React.RefObject<any | null>;
 }
 
-const CameraOverlay = ({ boxes }: CameraOverlayProps) => {
-    return (
-        <div className="absolute inset-0 pointer-events-none">
-            {boxes.map((box) => (
-                <motion.div
-                    key={box.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.2 }}
-                    style={{
-                        left: `${box.x}%`,
-                        top: `${box.y}%`,
-                        width: `${box.width}%`,
-                        height: `${box.height}%`,
-                    }}
-                    className={`absolute border-2 ${box.isKnown ? 'border-green-500' : 'border-red-500'
-                        }`}
-                >
-                    <div
-                        className={`absolute -top-6 left-0 px-2 py-0.5 text-xs font-bold text-white rounded ${box.isKnown ? 'bg-green-500' : 'bg-red-500'
-                            }`}
-                    >
-                        {box.label} ({Math.round(box.confidence * 100)}%)
-                    </div>
-                </motion.div>
-            ))}
-        </div>
-    );
+const CameraOverlay = ({ videoRef, bboxRef }: CameraOverlayProps) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const video = videoRef?.current;
+    if (!canvas || !video) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let rafId: number;
+
+    const draw = () => {
+      // wait for video metadata
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        rafId = requestAnimationFrame(draw);
+        return;
+      }
+
+      // sync canvas size
+      if (
+        canvas.width !== video.videoWidth ||
+        canvas.height !== video.videoHeight
+      ) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const data = bboxRef?.current;
+      const now = Date.now();
+
+      if (data?.bbox && data.visibleAfter <= now) {
+        const { x, y, width, height } = data.bbox;
+
+        const px = (x / 100) * canvas.width;
+        const py = (y / 100) * canvas.height;
+        const pw = (width / 100) * canvas.width;
+        const ph = (height / 100) * canvas.height;
+
+        ctx.strokeStyle = "lime";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(px, py, pw, ph);
+
+        ctx.font = "14px Arial";
+        ctx.fillStyle = "lime";
+        ctx.fillText(
+          `ID ${data.trackId}`,
+          px,
+          Math.max(py - 6, 12)
+        );
+      }
+
+      rafId = requestAnimationFrame(draw);
+    };
+
+    draw(); // 🔥 ALWAYS start loop
+
+    return () => cancelAnimationFrame(rafId);
+  }, [videoRef, bboxRef]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 pointer-events-none z-10"
+    />
+  );
 };
 
 export default CameraOverlay;

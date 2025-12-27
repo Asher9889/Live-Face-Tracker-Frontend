@@ -8,6 +8,12 @@ const endPoints = {
             url: '/employees',
             method: 'GET'
         }
+    },
+    camera: {
+        token: {
+            url: '/cameras/:cameraCode/token',
+            method: 'GET'
+        }
     }
 }
 

@@ -6,7 +6,7 @@ interface CameraState {
 }
 
 const initialState: CameraState = {
-  byCode: {} 
+    byCode: {}
 }
 
 const cameraRuntimeSlice = createSlice({
@@ -14,17 +14,30 @@ const cameraRuntimeSlice = createSlice({
     initialState,
     reducers: {
         updateOne: (state, action: PayloadAction<ICameraRuntime>) => {
-            const {code, ...data} = action.payload;
+            const { code, ...data } = action.payload;
 
             state.byCode[code] = {
-                code: code,
-                ...data
+                ...state.byCode[code],
+                ...data,
             };
+        },
+        updateStreamStartTs: (state, action: PayloadAction<{ code: string, streamStartTs: number }>) => {
+            const { code, streamStartTs } = action.payload;
+            if (!state.byCode[code]) {
+                state.byCode[code] = {
+                    code,
+                    status: "online",
+                    lastFrameAt: 0,
+                    streamStartTs,
+                };
+            } else {
+                state.byCode[code].streamStartTs = streamStartTs;
+            }
         }
     }
 })
 
-export const { updateOne } = cameraRuntimeSlice.actions;
+export const { updateOne, updateStreamStartTs } = cameraRuntimeSlice.actions;
 
 export default cameraRuntimeSlice.reducer;
 
