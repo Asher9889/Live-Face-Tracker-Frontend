@@ -1,5 +1,5 @@
 import initCameraStatusWS from "./ws/cameraStatusWS";
+import { startCamera, getCameraToken } from "./camera.api";
 
 
-
-export { initCameraStatusWS }
+export { initCameraStatusWS, startCamera, getCameraToken }

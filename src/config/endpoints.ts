@@ -13,6 +13,10 @@ const endPoints = {
         token: {
             url: '/cameras/:cameraCode/token',
             method: 'GET'
+        },
+        start: {
+            url: '/cameras/:cameraCode/start',
+            method: 'POST'
         }
     }
 }

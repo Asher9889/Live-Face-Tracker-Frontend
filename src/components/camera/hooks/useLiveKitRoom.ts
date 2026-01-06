@@ -11,6 +11,7 @@ type Props = {
 export function useLiveKitRoom({ token, videoRef }: Props) {
   const roomRef = useRef<Room | null>(null);
 
+  console.log("Token is: ", token)
   useEffect(() => {
     if (!token || !videoRef.current) return;
 
