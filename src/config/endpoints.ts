@@ -9,6 +9,7 @@ const endPoints = {
             method: 'GET'
         }
     },
+
     camera: {
         token: {
             url: '/cameras/:cameraCode/token',
@@ -17,8 +18,18 @@ const endPoints = {
         start: {
             url: '/cameras/:cameraCode/start',
             method: 'POST'
+        },
+        register: {
+            url: '/cameras',
+            method: 'POST'
+        },
+        get: {
+            url: '/cameras',
+            method: 'GET'
         }
     }
+
+
 }
 
 export default endPoints;
