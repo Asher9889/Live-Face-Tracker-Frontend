@@ -21,6 +21,8 @@ interface LiveCameraCardProps {
 const LiveCameraCard = ({ camera, onFullscreen }: LiveCameraCardProps) => {
   const bboxRef = useRef<any | null>(null);
 
+  console.log("Camera : ", camera)
+
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -73,14 +75,17 @@ const LiveCameraCard = ({ camera, onFullscreen }: LiveCameraCardProps) => {
             style={{ width: 704, height: 576 }}
           >
 
-            {camera.status === 'online' ? (
+            {/* {camera.status === 'online' ? (
               <LiveKitPlayer videoRef={videoRef} cameraId={camera.code} />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted/10">
                 <SignalZero className="h-12 w-12 mb-2 opacity-50" />
                 <p>Signal Lost</p>
               </div>
-            )}
+            )} */}
+
+            <LiveKitPlayer videoRef={videoRef} cameraId={camera.code} />
+           
 
             <CameraOverlay bboxRef={bboxRef} cameraCode={camera.code} videoRef={videoRef} />
 

@@ -9,8 +9,27 @@ import Alerts from '@/pages/Alerts';
 import Timeline from '@/pages/Timeline';
 import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/Login';
+import { useAppSelector } from './store/hooks';
+import { AppBootUpLoader } from './components/common';
+import { useEffect } from 'react';
+import appBootstrap from './bootstrap/appBootstrap';
 
 function App() {
+
+
+  useEffect( () => {
+    const boot = async () => {
+      await appBootstrap();
+    }
+    boot();
+  }, [])
+
+  const bootstrap = useAppSelector((state) => state.bootstrap);
+
+  if(bootstrap.status === "loading") {
+    return <div className='w-screen h-screen flex items-center justify-center'><AppBootUpLoader /></div>;
+  }
+
   return (
     <BrowserRouter>
       <Routes>

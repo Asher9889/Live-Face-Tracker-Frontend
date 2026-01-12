@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { RoomEvent, Track } from "livekit-client";
 
-export function useCameraVideo(room: any, videoRef: React.RefObject<HTMLVideoElement | null>
-) {
+export function useCameraVideo(room: any, videoRef: React.RefObject<HTMLVideoElement | null>) {
   useEffect(() => {
     if (!room || !videoRef.current) return;
 

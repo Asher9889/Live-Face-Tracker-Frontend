@@ -8,7 +8,7 @@ import { useAppSelector } from "@/store/hooks";
 const CameraGrid = () => {
     const [layout, setLayout] = useState<1 | 2 | 3 | 4>(2);
 
-    const cameras = useAppSelector((state) => state.cameraEntity.ids.map((code) => {
+    let cameras =  useAppSelector((state) => state.cameraEntity.ids.map((code) => {
        const cam = state.cameraEntity.byCode[code];
        const runtime = state.cameraRuntime.byCode[code];
 
@@ -19,13 +19,7 @@ const CameraGrid = () => {
             status: runtime?.status ?? "offline",
         };
     }))
-    // const cameras = [
-    //     { id: "entry_1", name: "Entry Gate 1", status: "online" as 'online' | 'offline' | 'error' },
-    //     { id: "exit_1", name: "Exit Gate 1", status: "online" as 'online' | 'offline' | 'error' },
-    //     // { id: "entry_2", name: "Exit Gate", status: "online" as 'online' | 'offline' | 'error' },
-    //     // { id: "entry_3", name: "Parking", status: "offline" as 'online' | 'offline' | 'error' },
-    // ];
-
+    
     const gridCols = {
         1: 'grid-cols-1',
         2: 'grid-cols-1 md:grid-cols-2',
@@ -65,7 +59,7 @@ const CameraGrid = () => {
                 </div>
             </div>
 
-            <div className={cn("grid gap-4", gridCols[layout])}>
+            <div className={cn("grid gap-4 bg-red-400", gridCols[layout])}>
                 {cameras.map((cam) => (
                     <LiveCameraCard key={cam.code} camera={cam} />
                 ))}
@@ -75,3 +69,8 @@ const CameraGrid = () => {
 };
 
 export default CameraGrid;
+
+
+
+
+

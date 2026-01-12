@@ -2,7 +2,7 @@ import { api } from "@/config"
 import { initCameraStatusWS } from "@/services";
 import { store } from "@/store";
 import { bootstrapFailed, bootstrapStarted, bootstrapSucceeded } from "@/store/slices/bootstrapSlice";
-import { cleanupExpiredBBoxes } from "@/store/slices/cameraBBoxSlice";
+// import { cleanupExpiredBBoxes } from "@/store/slices/cameraBBoxSlice";
 import { registerAll } from "@/store/slices/cameraEntitySlice";
 import { updateOne } from "@/store/slices/cameraRuntimeSlice";
 import type { IRuntimeCameraStatus } from "@/types";
