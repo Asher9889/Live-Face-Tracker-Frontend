@@ -6,18 +6,34 @@ import type { TCameraFormValues } from "../schema/camera.schema";
 const createCamera = async (camera: TCameraFormValues) => {
   try {
 
-    const fd = new FormData();
-    fd.append("name", camera.name);
-    fd.append("code", camera.code);
-    fd.append("gateType", camera.gateType);
-    fd.append("location", camera.location);
-    fd.append("rtspUrl", camera.rtspUrl);
-    fd.append("username", camera.credentials.username);
-    fd.append("password", camera.credentials.password);
+    const dataForApi = {
+      ...camera,
+      streamConfig: {
+        aiFps: 15,
+        displayFps: 25
+      },
+      enabled: true,
+      roi: {
+        enabled: true,
+        polygons: [
+          [10, 20],
+          [200, 20],
+          [200, 250],
+          [10, 250]
+        ]
+      },
+      wsStreamId: camera.code,
+      status: {
+        online: true,
+        lastCheckedAt: new Date(),
+        lastFrameAt: new Date()
+      }
+    }
+
     const response = await api.request({
       url: endPoints.camera.register.url,
       method: endPoints.camera.register.method,
-      data: fd,
+      data: dataForApi,
     });
 
     return response.data;

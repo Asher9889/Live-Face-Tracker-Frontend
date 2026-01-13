@@ -1,22 +1,16 @@
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { useEmployee } from "./hooks/useRegister";
+import EmployeeListSkeleton from "./EmployeeListSkeleton";
 
 const EmployeeList = () => {
     // Mock data
 
     const { data: employees, isLoading, isError, error } = useEmployee();
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) return <EmployeeListSkeleton />;
     if (isError) return <p>{error.message}</p>;
 
     return (

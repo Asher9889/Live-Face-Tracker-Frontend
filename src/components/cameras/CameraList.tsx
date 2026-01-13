@@ -9,11 +9,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { useCamera } from "./hooks/useRegisterCamera";
+import CameraListSkeleton from "./CameraListSkeleton";
 
 const CameraList = () => {
   const { data: cameras = [], isLoading, isError, error } = useCamera();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <CameraListSkeleton />;
   if (isError) return <p>{error.message}</p>;
 
   return (

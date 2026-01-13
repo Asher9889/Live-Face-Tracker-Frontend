@@ -3,8 +3,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { cameraSchema, type TCameraFormValues } from "../schema/camera.schema"
 import { createCamera, getCamera } from "../api/camera.api";
+import { useQueryClient } from "@tanstack/react-query";
 
 function useRegisterCamera(onSuccess?: () => void) {
+  const queryClient = useQueryClient();
+
   const methods = useForm<TCameraFormValues>({
     resolver: zodResolver(cameraSchema),
     defaultValues: {
@@ -26,8 +29,9 @@ function useRegisterCamera(onSuccess?: () => void) {
   const mutation = useMutation({
     mutationFn: createCamera,
     onSuccess: () => {
-      methods.reset();        
-      onSuccess?.();         
+      methods.reset();
+      queryClient.invalidateQueries({queryKey: ["cameras"]})
+      onSuccess?.();
     },
     onError: (error) => {
       console.error(error);
