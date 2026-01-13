@@ -3,9 +3,12 @@ import { employeeSchema, type TEmployeeFormValues } from "../schema/employee.sch
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createEmployee, getEmployee } from "../api/employee.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 
-function useRegister() {
+
+function useRegister(onClose?: () => void) {
+    const queryClient = useQueryClient();
     const methods = useForm<TEmployeeFormValues>({
         resolver: zodResolver(employeeSchema),
         defaultValues: {
@@ -21,6 +24,11 @@ function useRegister() {
 
     const mutation = useMutation({
         mutationFn: createEmployee,
+        onSuccess: () => {
+            methods.reset();
+            queryClient.invalidateQueries({ queryKey: ['employees'] });
+            onClose?.();
+        },
         onError: (error) => {
             console.log(error);
         }

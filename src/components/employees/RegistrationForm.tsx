@@ -13,8 +13,8 @@ import { Spinner } from '../ui/spinner';
 
 
 
-const RegistrationForm = () => {
-    const { control, onSubmit, register, setValue, formState: { errors = {}} , mutation, reset } = useRegister();
+const RegistrationForm = ({ onClose }: { onClose: () => void }) => {
+    const { control, onSubmit, register, setValue, formState: { errors = {} }, mutation, reset } = useRegister(onClose);
 
     return (
         <form onSubmit={onSubmit} className="space-y-4">

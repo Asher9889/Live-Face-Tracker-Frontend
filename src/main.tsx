@@ -11,7 +11,7 @@ import LiveKitProvider from './providers/LiveKitProvider.tsx'
 
 await appBootstrap().catch((err) => console.log(err));
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

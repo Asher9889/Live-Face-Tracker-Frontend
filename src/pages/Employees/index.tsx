@@ -33,7 +33,7 @@ const Employees = () => {
                                 Add a new employee to the system. This will also register their face for recognition.
                             </DialogDescription>
                         </DialogHeader>
-                        <RegistrationForm />
+                        <RegistrationForm onClose={() => setIsDialogOpen(false)} />
                     </DialogContent>
                 </Dialog>
             </div>

@@ -16,7 +16,6 @@ const EmployeeList = () => {
 
     const { data: employees, isLoading, isError, error } = useEmployee();
 
-    console.log("employees is", employees)
     if (isLoading) return <p>Loading...</p>;
     if (isError) return <p>{error.message}</p>;
 
