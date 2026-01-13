@@ -1,29 +1,40 @@
 // FilePreviewInput.tsx
 import React, { useEffect, useMemo } from "react";
+// import { Controller } from "react-hook-form";
+import type { Control, FieldPath, FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
-type Props = {
-  name: string;
-  control: any; // from useForm().control
+// type Props = {
+//   name: string;
+//   control: any; // from useForm().control
+//   maxFiles?: number;
+//   accept?: string;
+//   boxSize?: number; // px
+//   label?: React.ReactNode;
+// };
+
+type Props<T extends FieldValues> = {
+  name: FieldPath<T>;
+  control: Control<T>;
   maxFiles?: number;
   accept?: string;
-  boxSize?: number; // px
+  boxSize?: number;
   label?: React.ReactNode;
 };
 
-export default function FilePreviewInput({
+export default function FilePreviewInput<T extends FieldValues>({
   name,
   control,
   maxFiles = 10,
   accept = "image/*",
   boxSize = 88,
   label,
-}: Props) {
+}: Props<T>) {
   return (
-    <Controller
+    <Controller 
       name={name} 
       control={control}
-      defaultValue={[]}
+      defaultValue={[] as any}
       render={({ field: { value = [], onChange, ref }, fieldState }) => {
         // value will be an array of File objects
         // convert FileList or File[] to normalized File[] 

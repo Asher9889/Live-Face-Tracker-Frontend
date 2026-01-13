@@ -1,4 +1,4 @@
-import { Maximize2, MoreVertical, SignalZero } from 'lucide-react';
+import { Maximize2, MoreVertical } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import LiveKitPlayer from './LiveKitPlayer';
 import CameraOverlay from './CameraOverlay';

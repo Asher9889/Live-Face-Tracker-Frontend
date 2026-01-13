@@ -1,7 +1,7 @@
 import { envs } from "@/config";
 import { WS_EVENTS } from "@/constants";
 import { store } from "@/store";
-import { bboxUpserted, clearCameraBBoxes } from "@/store/slices/cameraBBoxSlice";
+// import { bboxUpserted, clearCameraBBoxes } from "@/store/slices/cameraBBoxSlice";
 import { updateOne, updateStreamStartTs } from "@/store/slices/cameraRuntimeSlice";
 import type { WSMessage } from "@/types";
 import { emitBBox } from "./bbox";

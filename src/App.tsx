@@ -16,17 +16,17 @@ import appBootstrap from './bootstrap/appBootstrap';
 
 function App() {
 
+  const bootApp = async () => {
+    await appBootstrap();
+  }
 
-  useEffect( () => {
-    const boot = async () => {
-      await appBootstrap();
-    }
-    boot();
+  useEffect(() => {
+    bootApp();
   }, [])
 
   const bootstrap = useAppSelector((state) => state.bootstrap);
 
-  if(bootstrap.status === "loading") {
+  if (bootstrap.status === "loading") {
     return <div className='w-screen h-screen flex items-center justify-center'><AppBootUpLoader /></div>;
   }
 
