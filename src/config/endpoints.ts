@@ -27,6 +27,13 @@ const endPoints = {
             url: '/cameras',
             method: 'GET'
         }
+    },
+
+    attendance: {
+        getAllEvents: {
+            url: '/attendance/events',
+            method: 'GET'
+        }
     }
 
 
