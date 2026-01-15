@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, AlertTriangle, ExternalLink } from "lucide-react";
-import type { AttendanceSession } from "@/types/attendance";
+import type { AttendanceSession } from "@/pages/Attendance/types/attendence.types";
 
 interface SessionDrawerProps {
     open: boolean;
@@ -18,56 +18,100 @@ const SessionDrawer = ({ open, onClose, sessionId }: SessionDrawerProps) => {
         id: "sess_1",
         employeeId: "EMP-1002",
         date: "2024-04-15",
-        firstEntry: "2024-04-15T09:12:00",
-        lastExit: "2024-04-15T18:42:00",
-        totalDuration: 510,
-        breakDuration: 45,
+
+        firstEntry: "2024-04-15T09:12:00Z",
+        lastExit: "2024-04-15T18:42:00Z",
+
+        totalDuration: 510,      // minutes
+        breakDuration: 45,       // minutes
+
         status: "COMPLETED",
+
         flags: ["LATE_ENTRY"],
+
         events: [
             {
                 id: "evt_1",
+                employeeId: "EMP-1002",
                 employeeName: "Alice Smith",
-                timestamp: "2024-04-15T09:12:00",
+                employeeAvatar: "/avatars/alice.png",
+                department: "Engineering",
+                designation: "Senior Developer",
+
+                timestamp: "2024-04-15T09:12:00Z",
                 type: "ENTRY",
                 gate: "Main Entrance",
+
                 status: "VERIFIED",
                 confidence: 98.5,
                 source: "FACE_AI",
-                isLate: true
+
+                isLate: true,
+                isEarlyExit: false,
             },
+
             {
                 id: "evt_2",
+                employeeId: "EMP-1002",
                 employeeName: "Alice Smith",
-                timestamp: "2024-04-15T13:00:00",
+                employeeAvatar: "/avatars/alice.png",
+                department: "Engineering",
+                designation: "Senior Developer",
+
+                timestamp: "2024-04-15T13:00:00Z",
                 type: "EXIT",
                 gate: "Back Gate",
+
                 status: "VERIFIED",
                 confidence: 99.1,
-                source: "FACE_AI"
+                source: "FACE_AI",
+
+                isLate: false,
+                isEarlyExit: false,
             },
+
             {
                 id: "evt_3",
+                employeeId: "EMP-1002",
                 employeeName: "Alice Smith",
-                timestamp: "2024-04-15T14:00:00",
+                employeeAvatar: "/avatars/alice.png",
+                department: "Engineering",
+                designation: "Senior Developer",
+
+                timestamp: "2024-04-15T14:00:00Z",
                 type: "ENTRY",
                 gate: "Main Entrance",
+
                 status: "VERIFIED",
                 confidence: 97.2,
-                source: "FACE_AI"
+                source: "FACE_AI",
+
+                isLate: false,
+                isEarlyExit: false,
             },
+
             {
                 id: "evt_4",
+                employeeId: "EMP-1002",
                 employeeName: "Alice Smith",
-                timestamp: "2024-04-15T18:42:00",
+                employeeAvatar: "/avatars/alice.png",
+                department: "Engineering",
+                designation: "Senior Developer",
+
+                timestamp: "2024-04-15T18:42:00Z",
                 type: "EXIT",
                 gate: "Main Entrance",
+
                 status: "VERIFIED",
                 confidence: 98.9,
-                source: "FACE_AI"
-            }
-        ]
+                source: "FACE_AI",
+
+                isLate: false,
+                isEarlyExit: false,
+            },
+        ],
     };
+
 
     if (!sessionId) return null;
 

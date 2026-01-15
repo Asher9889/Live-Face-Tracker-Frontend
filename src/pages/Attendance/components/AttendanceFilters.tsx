@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { CalendarIcon, Filter, X } from "lucide-react";
 import { format } from "date-fns";
-import type { AttendanceFiltersState } from "@/types/attendance";
+import type { AttendanceFiltersState } from "@/pages/Attendance/types/attendence.types";
 import { cn } from "@/utils/cn";
 
 interface AttendanceFiltersProps {

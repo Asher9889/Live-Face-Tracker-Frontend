@@ -1,6 +1,6 @@
 import { Users, UserX, Clock, ArrowRightFromLine, ArrowLeftFromLine } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { AttendanceStats } from '@/types/attendance';
+import type { AttendanceStats } from '@/pages/Attendance/types/attendence.types';
 
 interface StatsCardsProps {
     stats?: AttendanceStats;

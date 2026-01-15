@@ -16,8 +16,6 @@ interface AttendanceTableProps {
 }
 
 const AttendanceTable = ({ records, onRowClick }: AttendanceTableProps) => {
-    // Mock data - in real app would come from props/query
-    console.log("record is", records)
     return (
         <div className="space-y-4">
             <div className="rounded-md border bg-card">
