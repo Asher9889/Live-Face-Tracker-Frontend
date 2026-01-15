@@ -12,6 +12,8 @@ export function useAttendence() {
 
     const attendenceData = mapAttendanceEventsToRecords(data?.attendanceEvents ?? []);
 
+    console.log("Attendance Data", attendenceData)
+
     return {
         data: attendenceData ?? [],
         isLoading,

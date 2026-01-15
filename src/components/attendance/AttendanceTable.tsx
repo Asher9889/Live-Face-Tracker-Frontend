@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { format } from "date-fns";
 import { cn } from "@/utils/cn";
 import type { AttendanceRecord } from "@/pages/Attendance/types/attendence.types";
+import { envs } from "@/config";
 
 interface AttendanceTableProps {
     records: AttendanceRecord[];
@@ -16,7 +17,7 @@ interface AttendanceTableProps {
 
 const AttendanceTable = ({ records, onRowClick }: AttendanceTableProps) => {
     // Mock data - in real app would come from props/query
-    
+    console.log("record is", records)
     return (
         <div className="space-y-4">
             <div className="rounded-md border bg-card">
@@ -32,7 +33,10 @@ const AttendanceTable = ({ records, onRowClick }: AttendanceTableProps) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {records.map((record) => (
+                        {records.map((record) => {
+                            const avatar = envs.minioServerUrl + "/" + envs.minioBucketName + "/" + record.employeeAvatar;
+                            console.log("avatar is", avatar)
+                            return (
                             <TableRow
                                 key={record.id}
                                 className="cursor-pointer hover:bg-muted/50"
@@ -41,7 +45,7 @@ const AttendanceTable = ({ records, onRowClick }: AttendanceTableProps) => {
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-9 w-9">
-                                            <AvatarImage src={record.employeeAvatar} />
+                                            <AvatarImage src={avatar} />
                                             <AvatarFallback>
                                                 {record.employeeName.substring(0, 2).toUpperCase()}
                                             </AvatarFallback>
@@ -139,8 +143,8 @@ const AttendanceTable = ({ records, onRowClick }: AttendanceTableProps) => {
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
-                            </TableRow>
-                        ))}
+                            </TableRow>)
+                        })}
                     </TableBody>
                 </Table>
             </div>

@@ -1,4 +1,4 @@
-export type AttendanceEvent = {
+export interface AttendanceEvent extends AttendanceRecord {
   employeeId: string | null;
   lastCameraCode: string;
   lastChangedAt: number;
@@ -23,7 +23,7 @@ export interface AttendanceRecord {
     id: string;
     employeeId: string | null; // Optional for unknown persons
     employeeName: string; // "Unknown" if not identified
-    employeeAvatar?: string;
+    employeeAvatar: string;
     department?: string;
     designation?: string;
     timestamp: string; // ISO string
