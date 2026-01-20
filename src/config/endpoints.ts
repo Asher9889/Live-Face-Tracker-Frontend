@@ -6,7 +6,7 @@ const endPoints = {
         },
         get: {
             url: '/employees',
-            method: 'GET'
+            method: 'GET',
         }
     },
 
@@ -32,6 +32,10 @@ const endPoints = {
     attendance: {
         getAllEvents: {
             url: '/attendance/events',
+            method: 'GET'
+        },
+        todaySession: {
+            url: '/attendance/today/:employeeId',
             method: 'GET'
         }
     }

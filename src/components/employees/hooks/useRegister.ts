@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { employeeSchema, type TEmployeeFormValues } from "../schema/employee.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createEmployee, getEmployee } from "../api/employee.api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 
 
@@ -47,12 +47,18 @@ function useRegister(onClose?: () => void) {
 }
 
 function useEmployee(){
-    const query = useQuery({
+    const query = useInfiniteQuery({
         queryKey: ['employees'],
-        queryFn: getEmployee,
+        queryFn: ({ pageParam }) => getEmployee({ cursor: pageParam, limit: 20 }),
         staleTime: 5 * 60 * 1000, // 5 minutes
+
+        initialPageParam: undefined,
+
+        getNextPageParam: (lastPage) => {
+            return lastPage.hasMore ? lastPage.cursor : undefined;
+        },
     })
     return query;
 }
 
-export {useRegister, useEmployee};
+export { useRegister, useEmployee };

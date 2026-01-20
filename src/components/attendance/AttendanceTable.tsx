@@ -33,7 +33,6 @@ const AttendanceTable = ({ records, onRowClick }: AttendanceTableProps) => {
                     <TableBody>
                         {records.map((record) => {
                             const avatar = envs.minioServerUrl + "/" + envs.minioBucketName + "/" + record.employeeAvatar;
-                            console.log("avatar is", avatar)
                             return (
                             <TableRow
                                 key={record.id}
@@ -51,7 +50,7 @@ const AttendanceTable = ({ records, onRowClick }: AttendanceTableProps) => {
                                         <div>
                                             <div className="font-medium text-sm">{record.employeeName}</div>
                                             <div className="text-xs text-muted-foreground">
-                                                {record.employeeId || "Unregistered"}
+                                                {record.employeeIdToView || "Unregistered"}
                                             </div>
                                         </div>
                                     </div>

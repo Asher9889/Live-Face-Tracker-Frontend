@@ -11,10 +11,14 @@ import AttendanceTableSkeleton from '@/components/attendance/AttendanceTableSkel
 
 const Attendance = () => {
     const [filters, setFilters] = useState<AttendanceFiltersState>({ dateRange: { from: new Date() } });
-    const [selectedSessionId, setSelectedSessionId] = useState<string | undefined>();
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | undefined>();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const { data, isLoading } = useAttendence();
+
+    if(isLoading) {
+        return <AttendanceTableSkeleton />;
+    }
 
     const handleFiltersChange = (newFilters: AttendanceFiltersState) => {
         setFilters(newFilters);
@@ -24,7 +28,7 @@ const Attendance = () => {
 
     const handleRowClick = (_record: AttendanceRecord) => {
         // In real app, we might derive sessionId from record or fetch matches
-        setSelectedSessionId("sess_1"); // Mock session ID
+        setSelectedEmployeeId(_record.employeeId); // Mock session ID
         setIsDrawerOpen(true);
     };
 
@@ -55,7 +59,7 @@ const Attendance = () => {
             <SessionDrawer
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
-                sessionId={selectedSessionId}
+                employeeId={selectedEmployeeId}
             />
         </div>
     );

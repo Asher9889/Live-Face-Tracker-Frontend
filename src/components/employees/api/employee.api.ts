@@ -25,11 +25,12 @@ const createEmployee = async (employee: TEmployeeFormValues) => {
 
 };
 
-const getEmployee = async () => {
+const getEmployee = async ({cursor, limit}: {cursor?: string, limit?: number}) => {
     try {
         const response = await api.request({
             url: endPoints.employee.get.url,
             method: endPoints.employee.get.method,
+            params: { cursor, limit }
         })
         return response.data?.data ?? [];
     } catch (err: any) {

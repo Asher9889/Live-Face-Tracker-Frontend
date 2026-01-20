@@ -8,7 +8,8 @@ export function mapAttendanceEventToRecord(event: AttendanceEvent): AttendanceRe
   return {
     id: event.id,
 
-    employeeId: `EMP-${employeeId?.slice(employeeId.length - 4)}`,
+    employeeIdToView: `EMP-${employeeId?.slice(employeeId.length - 4)}`,
+    employeeId: employeeId,
     employeeName: event.employeeName,
     employeeAvatar: event.employeeAvatar,
 

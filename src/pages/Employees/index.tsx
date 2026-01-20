@@ -2,14 +2,7 @@ import { useState } from 'react';
 import EmployeeList from '@/components/employees/EmployeeList';
 import RegistrationForm from '@/components/employees/RegistrationForm';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus } from 'lucide-react';
 
 const Employees = () => {
