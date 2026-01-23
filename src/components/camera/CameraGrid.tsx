@@ -59,7 +59,7 @@ const CameraGrid = () => {
                 </div>
             </div>
 
-            <div className={cn("grid gap-4 bg-red-400", gridCols[layout])}>
+            <div className={cn("grid gap-4", gridCols[layout])}>
                 {cameras.map((cam) => (
                     <LiveCameraCard key={cam.code} camera={cam} />
                 ))}

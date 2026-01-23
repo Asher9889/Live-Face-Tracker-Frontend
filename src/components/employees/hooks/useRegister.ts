@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { employeeSchema, type TEmployeeFormValues } from "../schema/employee.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createEmployee, getEmployee } from "../api/employee.api";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 
 
