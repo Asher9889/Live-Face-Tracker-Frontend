@@ -18,15 +18,7 @@ type Employee = {
 }
 
 const EmployeeList = () => {
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useEmployee();
+  const { data, isLoading, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useEmployee();
 
   const employees = data?.pages.flatMap(page => page.data) ?? [];
 
@@ -52,7 +44,7 @@ const EmployeeList = () => {
             <TableRow key={employee.id}>
               <TableCell className="flex items-center gap-3">
                 <Avatar>
-                  <AvatarImage src={employee.avatar} />
+                  <AvatarImage loading="lazy" src={employee.avatar} />
                   <AvatarFallback>
                     {employee.name.substring(0, 2)}
                   </AvatarFallback>

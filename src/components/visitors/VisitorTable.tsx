@@ -9,8 +9,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
+// import { useState } from "react";
 
 const VisitorTable = () => {
+
+    // const [isDialogOpen, setIsDialogOpen] = useState<Boolean>(false);
+
     // Mock data
     const visitors = Array.from({ length: 5 }).map((_, i) => ({
         id: i.toString(),
@@ -36,7 +40,7 @@ const VisitorTable = () => {
                 </TableHeader>
                 <TableBody>
                     {visitors.map((visitor) => (
-                        <TableRow key={visitor.id}>
+                        <TableRow key={visitor.id} className="cursor-pointer" >
                             <TableCell>
                                 <Avatar className="h-12 w-12 rounded-md">
                                     <AvatarImage src={visitor.image} />

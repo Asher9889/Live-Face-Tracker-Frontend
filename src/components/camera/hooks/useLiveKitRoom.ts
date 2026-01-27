@@ -1,4 +1,3 @@
-// useLiveKitRoom.ts
 import { useEffect, useRef } from "react";
 import { Room, RoomEvent, Track } from "livekit-client";
 import { envs } from "@/config";
@@ -11,7 +10,6 @@ type Props = {
 export function useLiveKitRoom({ token, videoRef }: Props) {
   const roomRef = useRef<Room | null>(null);
 
-  console.log("Token is: ", token)
   useEffect(() => {
     if (!token || !videoRef.current) return;
 
@@ -36,7 +34,6 @@ export function useLiveKitRoom({ token, videoRef }: Props) {
 
     room.on(RoomEvent.TrackSubscribed, onTrackSubscribed);
     room.on(RoomEvent.TrackUnsubscribed, onTrackUnsubscribed);
-
     room.connect(envs.liveKitUrl, token);
 
     return () => {
