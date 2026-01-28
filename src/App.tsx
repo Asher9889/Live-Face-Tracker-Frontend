@@ -12,43 +12,81 @@ import Login from '@/pages/Login';
 import EmployeeHistory from '@/pages/Attendance/EmployeeHistory';
 import { useAppSelector } from './store/hooks';
 import { AppBootUpLoader } from './components/common';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import appBootstrap from './bootstrap/appBootstrap';
+import authBootstrap from './bootstrap/authBootstrap';
 
 function App() {
 
-  const bootApp = async () => {
-    await appBootstrap();
-  }
+  const authCheckedRef = useRef(false);
+  const appBootstrappedRef = useRef(false);
+
+  const authStatus = useAppSelector((s) => s.auth.status)
+  const bootstrapStatus = useAppSelector((s) => s.bootstrap.status);
+
 
   useEffect(() => {
-    bootApp();
+    if (!authCheckedRef.current) {
+      authBootstrap();
+      authCheckedRef.current = true;
+    }
   }, [])
 
-  const bootstrap = useAppSelector((state) => state.bootstrap);
 
-  if (bootstrap.status === "loading") {
-    return <div className='w-screen h-screen flex items-center justify-center'><AppBootUpLoader /></div>;
+  useEffect(() => {
+    if (authStatus === "authenticated" && !appBootstrappedRef.current) {
+      appBootstrap();
+      appBootstrappedRef.current = true;
+    }
+  }, [authStatus])
+
+  if (authStatus === "checking") {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <AppBootUpLoader />
+      </div>
+    );
   }
+
+
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
 
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="live" element={<LiveMonitoring />} />
-          <Route path="attendance" element={<Attendance />} />
-          <Route path="attendance/employee/:id" element={<EmployeeHistory />} />
-          <Route path="visitors" element={<Visitors />} />
-          <Route path="employees" element={<Employees />} />
-          <Route path="cameras" element={<Cameras />} />
-          <Route path="alerts" element={<Alerts />} />
-          <Route path="timeline" element={<Timeline />} />
-        </Route>
+        {/* 🔓 Public */}
+        <Route path="/login" element={authStatus === "authenticated" ? (<Navigate to="/" replace />) : (<Login />)} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* 🔐 Protected */}
+        {authStatus === "authenticated" && (
+          <Route path="/" element={<MainLayout />}>
+            {bootstrapStatus === "loading" ? (
+              <Route
+                index
+                element={
+                  <div className="w-full h-full flex items-center justify-center">
+                    <AppBootUpLoader />
+                  </div>
+                }
+              />
+            ) : (
+              <>
+                <Route index element={<Dashboard />} />
+                <Route path="live" element={<LiveMonitoring />} />
+                <Route path="attendance" element={<Attendance />} />
+                <Route path="attendance/employee/:id" element={<EmployeeHistory />}/>
+                <Route path="visitors" element={<Visitors />} />
+                <Route path="employees" element={<Employees />} />
+                <Route path="cameras" element={<Cameras />} />
+                <Route path="alerts" element={<Alerts />} />
+                <Route path="timeline" element={<Timeline />} />
+              </>
+            )}
+          </Route>
+        )}
+
+          {/* Catch-all */}
+        <Route path="*" element={<Navigate to={authStatus === "authenticated" ? "/" : "/login"}replace />}/>
       </Routes>
     </BrowserRouter>
   );

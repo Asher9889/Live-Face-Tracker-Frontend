@@ -1,19 +1,16 @@
 import { NavLink } from 'react-router-dom';
-import {
-    LayoutDashboard,
-    Video,
-    Users,
-    UserCheck,
-    Camera,
-    Bell,
-    Clock,
-    LogOut
-} from 'lucide-react';
+import { LayoutDashboard, Video, Users, UserCheck, Camera, Bell, Clock, LogOut } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAppSelector } from '@/store/hooks';
+import { useLogout } from '@/hooks';
 
 const Sidebar = () => {
     const { isSidebarOpen } = useAppSelector((state) => state.ui);
+    const logout = useLogout();
+
+    const handleLogout = () => {
+        logout();
+    }
 
     const navItems = [
         { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -25,6 +22,7 @@ const Sidebar = () => {
         { to: '/alerts', icon: Bell, label: 'Alerts' },
         { to: '/timeline', icon: Clock, label: 'Timeline' },
     ];
+
 
     return (
         <aside
@@ -51,7 +49,7 @@ const Sidebar = () => {
                     </NavLink>
                 ))}
 
-                <div className="mt-auto border-t pt-2">
+                <div onClick={handleLogout} className="mt-auto border-t pt-2">
                     <button className={cn(
                         "flex items-center gap-3 px-3 py-2 w-full rounded-md transition-colors hover:bg-destructive/10 hover:text-destructive text-muted-foreground",
                         !isSidebarOpen && "justify-center"

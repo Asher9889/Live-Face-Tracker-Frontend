@@ -14,6 +14,7 @@ export default async function appBootstrap() {
     try {
         const cameras = await api.get("/cameras");
         const status = await api.get("/cameras/status");
+
         store.dispatch(registerAll(cameras.data.data));
         status.data.data.forEach((cam: IRuntimeCameraStatus) => {
             store.dispatch(updateOne({
@@ -23,7 +24,6 @@ export default async function appBootstrap() {
                 streamStartTs: cam.streamStartTs,
             }));
         })
-
         initCameraStatusWS();
 
         store.dispatch(bootstrapSucceeded());

@@ -11,31 +11,43 @@ interface User {
 interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
-    token: string | null;
+    status: 'checking' | 'authenticated' | 'unauthenticated';
+
 }
 
 const initialState: AuthState = {
     user: null,
     isAuthenticated: false,
-    token: null,
+    status: 'checking',
 };
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        login: (state, action: PayloadAction<{ user: User; token: string }>) => {
+        authCheckedUnauthenticated: (state) => {
+            state.user = null;
+            state.isAuthenticated = false;
+            state.status = 'unauthenticated';
+        },
+
+        authCheckedAuthenticated: (state, action: PayloadAction<{ user: User }>) => {
             state.user = action.payload.user;
-            state.token = action.payload.token;
             state.isAuthenticated = true;
+            state.status = 'authenticated';
+        },
+        login: (state, action: PayloadAction<{ user: User }>) => {
+            state.user = action.payload.user;
+            state.isAuthenticated = true;
+            state.status = 'authenticated';
         },
         logout: (state) => {
             state.user = null;
-            state.token = null;
             state.isAuthenticated = false;
+            state.status = 'unauthenticated';
         },
     },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, authCheckedUnauthenticated, authCheckedAuthenticated} = authSlice.actions;
 export default authSlice.reducer;
