@@ -10,6 +10,7 @@ import Timeline from '@/pages/Timeline';
 import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/Login';
 import EmployeeHistory from '@/pages/Attendance/EmployeeHistory';
+import NotFound from '@/pages/NotFound';
 import { useAppSelector } from './store/hooks';
 import { AppBootUpLoader } from './components/common';
 import { useEffect, useRef } from 'react';
@@ -74,7 +75,7 @@ function App() {
                 <Route index element={<Dashboard />} />
                 <Route path="live" element={<LiveMonitoring />} />
                 <Route path="attendance" element={<Attendance />} />
-                <Route path="attendance/employee/:id" element={<EmployeeHistory />}/>
+                <Route path="attendance/employee/:id" element={<EmployeeHistory />} />
                 <Route path="visitors" element={<Visitors />} />
                 <Route path="employees" element={<Employees />} />
                 <Route path="cameras" element={<Cameras />} />
@@ -85,8 +86,8 @@ function App() {
           </Route>
         )}
 
-          {/* Catch-all */}
-        <Route path="*" element={<Navigate to={authStatus === "authenticated" ? "/" : "/login"}replace />}/>
+        {/* Catch-all */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
