@@ -21,9 +21,6 @@ interface LiveCameraCardProps {
 const LiveCameraCard = ({ camera, onFullscreen }: LiveCameraCardProps) => {
   const bboxRef = useRef<any | null>(null);
 
-  console.log("Camera : ", camera)
-
-
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const scaleRef = useRef<HTMLDivElement | null>(null);
@@ -52,7 +49,7 @@ const LiveCameraCard = ({ camera, onFullscreen }: LiveCameraCardProps) => {
     const unsubscribe = subscribeBBox(camera.code, (payload) => {
       bboxRef.current = {
         ...payload,
-        receivedAt: Date.now(),          // browser render timeline
+        receivedAt: Date.now(),
         visibleAfter: Date.now() + 6000,
 
       };
@@ -69,11 +66,7 @@ const LiveCameraCard = ({ camera, onFullscreen }: LiveCameraCardProps) => {
         <div ref={scaleRef} className="relative">
 
           {/* FIXED LOGICAL STAGE (never scaled logically) */}
-          <div
-            ref={stageRef}
-            className="relative"
-            style={{ width: 704, height: 576 }}
-          >
+          <div ref={stageRef} className="relative" style={{ width: 704, height: 576 }}>
 
             {/* {camera.status === 'online' ? (
               <LiveKitPlayer videoRef={videoRef} cameraId={camera.code} />
@@ -85,42 +78,45 @@ const LiveCameraCard = ({ camera, onFullscreen }: LiveCameraCardProps) => {
             )} */}
 
             <LiveKitPlayer videoRef={videoRef} cameraId={camera.code} />
-           
+
 
             <CameraOverlay bboxRef={bboxRef} cameraCode={camera.code} videoRef={videoRef} />
 
-            {/* Hover UI – unchanged */}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
-              <div className="flex justify-between items-start">
-                <div className="bg-black/50 px-2 py-1 rounded text-xs text-white flex items-center gap-2">
-                  <span className={cn(
-                    "h-2 w-2 rounded-full animate-pulse",
-                    camera.status === 'online' ? "bg-green-500" : "bg-red-500"
-                  )} />
-                  {camera.status.toUpperCase()} • {"cameraLiveStatus.fps"} FPS
-                </div>
-                <button className="p-1.5 bg-black/50 rounded-full text-white">
-                  <MoreVertical className="h-4 w-4" />
-                </button>
-              </div>
 
-              <div className="flex justify-between items-end">
-                <div>
-                  <h3 className="text-white font-medium text-sm">{camera.name}</h3>
-                  <p className="text-white/60 text-xs">{camera.location}</p>
-                </div>
-                <button
-                  onClick={onFullscreen}
-                  className="p-2 bg-white/10 rounded-full text-white"
-                >
-                  <Maximize2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
+
+      {/* Hover UI – unchanged */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
+        <div className="flex justify-between items-start">
+          <div className="bg-black/50 px-2 py-1 rounded text-xs text-white flex items-center gap-2">
+            <span className={cn(
+              "h-2 w-2 rounded-full animate-pulse",
+              camera.status === 'online' ? "bg-green-500" : "bg-red-500"
+            )} />
+            {camera.status.toUpperCase()} • {"cameraLiveStatus.fps"} FPS
+          </div>
+          <button className="p-1.5 bg-black/50 rounded-full text-white">
+            <MoreVertical className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex justify-between items-end">
+          <div>
+            <h3 className="text-white font-medium text-sm">{camera.name}</h3>
+            <p className="text-white/60 text-xs">{camera.location}</p>
+          </div>
+          <button
+            onClick={onFullscreen}
+            className="p-2 bg-white/10 rounded-full text-white"
+          >
+            <Maximize2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+      
     </Card>
   );
 };
