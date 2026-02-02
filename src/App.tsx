@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import LiveMonitoring from '@/pages/LiveMonitoring';
 import Visitors from '@/pages/Visitors';
@@ -13,15 +13,29 @@ import { AppBootUpLoader } from './components/common';
 import { useEffect, useRef } from 'react';
 import appBootstrap from './bootstrap/appBootstrap';
 import authBootstrap from './bootstrap/authBootstrap';
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 
 const Employees = lazy(() => import('./pages/Employees/index'));
 const Cameras = lazy(() => import('./pages/Cameras/index'));
 const Attendance = lazy(() => import('./pages/Attendance/index'));
 
+const ProtectedRoute = () => {
+  const authStatus = useAppSelector((s) => s.auth.status);
 
+  if (authStatus === "checking") {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <AppBootUpLoader />
+      </div>
+    );
+  }
 
+  if (authStatus !== "authenticated") {
+    return <Navigate to="/login" replace />;
+  }
 
+  return <Outlet />;
+};
 
 function App() {
 
@@ -55,48 +69,64 @@ function App() {
     );
   }
 
+  if (bootstrapStatus !== "ready") {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <AppBootUpLoader />
+      </div>
+    );
+  }
+
 
 
   return (
     <BrowserRouter>
-      <Routes>
+      <Suspense
+        fallback={
+          <div className="w-screen h-screen flex items-center justify-center">
+            <AppBootUpLoader />
+          </div>
+        }
+      >
+        <Routes>
 
-        {/* 🔓 Public */}
-        <Route path="/login" element={authStatus === "authenticated" ? (<Navigate to="/" replace />) : (<Login />)} />
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={
+              authStatus === "authenticated" ? (
+                <Navigate to="/" replace />
+              ) : (
+                <Login />
+              )
+            }
+          />
 
-        {/* 🔐 Protected */}
-        {authStatus === "authenticated" ? (
-          <Route path="/" element={<MainLayout />}>
-            {bootstrapStatus === "loading" ? (
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="live" element={<LiveMonitoring />} />
+              <Route path="attendance" element={<Attendance />} />
               <Route
-                index
-                element={
-                  <div className="w-full h-full flex items-center justify-center">
-                    <AppBootUpLoader />
-                  </div>
-                }
+                path="attendance/employee/:id"
+                element={<EmployeeHistory />}
               />
-            ) : (
-              <>
-                <Route index element={<Dashboard />} />
-                <Route path="live" element={<LiveMonitoring />} />
-                <Route path="attendance" element={<Attendance />} />
-                <Route path="attendance/employee/:id" element={<EmployeeHistory />} />
-                <Route path="visitors" element={<Visitors />} />
-                <Route path="employees" element={<Employees />} />
-                <Route path="cameras" element={<Cameras />} />
-                <Route path="alerts" element={<Alerts />} />
-                <Route path="timeline" element={<Timeline />} />
-              </>
-            )}
-          </Route>
-        ) : (
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        )}
+              <Route path="visitors" element={<Visitors />} />
+              <Route path="employees" element={<Employees />} />
+              <Route path="cameras" element={<Cameras />} />
+              <Route path="alerts" element={<Alerts />} />
+              <Route path="timeline" element={<Timeline />} />
+              {/* 404 ONLY for authenticated users */}
+              <Route path="*" element={<NotFound />} />
 
-        {/* Catch-all */}
-        <Route path="*" element={authStatus === "authenticated" ? <NotFound /> : <Navigate to="/login" replace />} />
-      </Routes>
+            </Route>
+          </Route>
+
+          <Route path="*" element={<Navigate to="/login" replace />} />
+
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
