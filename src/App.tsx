@@ -59,7 +59,7 @@ function App() {
         <Route path="/login" element={authStatus === "authenticated" ? (<Navigate to="/" replace />) : (<Login />)} />
 
         {/* 🔐 Protected */}
-        {authStatus === "authenticated" && (
+        {authStatus === "authenticated" ? (
           <Route path="/" element={<MainLayout />}>
             {bootstrapStatus === "loading" ? (
               <Route
@@ -84,6 +84,8 @@ function App() {
               </>
             )}
           </Route>
+        ) : (
+          <Route path="*" element={<Navigate to="/login" replace />} />
         )}
 
         {/* Catch-all */}
