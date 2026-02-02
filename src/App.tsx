@@ -1,10 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import LiveMonitoring from '@/pages/LiveMonitoring';
-import Attendance from '@/pages/Attendance';
 import Visitors from '@/pages/Visitors';
-import Employees from '@/pages/Employees';
-import Cameras from '@/pages/Cameras';
 import Alerts from '@/pages/Alerts';
 import Timeline from '@/pages/Timeline';
 import Dashboard from '@/pages/Dashboard';
@@ -16,6 +13,15 @@ import { AppBootUpLoader } from './components/common';
 import { useEffect, useRef } from 'react';
 import appBootstrap from './bootstrap/appBootstrap';
 import authBootstrap from './bootstrap/authBootstrap';
+import { lazy } from 'react';
+
+const Employees = lazy(() => import('./pages/Employees/index'));
+const Cameras = lazy(() => import('./pages/Cameras/index'));
+const Attendance = lazy(() => import('./pages/Attendance/index'));
+
+
+
+
 
 function App() {
 
