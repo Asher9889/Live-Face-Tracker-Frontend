@@ -43,7 +43,7 @@ function App() {
   const appBootstrappedRef = useRef(false);
 
   const authStatus = useAppSelector((s) => s.auth.status)
-  const bootstrapStatus = useAppSelector((s) => s.bootstrap.status);
+  // const bootstrapStatus = useAppSelector((s) => s.bootstrap.status);
 
 
   useEffect(() => {
@@ -68,16 +68,6 @@ function App() {
       </div>
     );
   }
-
-  if (bootstrapStatus !== "ready") {
-    return (
-      <div className="w-screen h-screen flex items-center justify-center">
-        <AppBootUpLoader />
-      </div>
-    );
-  }
-
-
 
   return (
     <BrowserRouter>
