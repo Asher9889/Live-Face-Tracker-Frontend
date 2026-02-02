@@ -87,7 +87,7 @@ function App() {
         )}
 
         {/* Catch-all */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={authStatus === "authenticated" ? <NotFound /> : <Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
