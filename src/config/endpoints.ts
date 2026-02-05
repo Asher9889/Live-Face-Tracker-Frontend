@@ -52,6 +52,12 @@ const endPoints = {
             url: '/attendance/today/:employeeId',
             method: 'GET'
         }
+    },
+    unknown: {
+        getAllVisitors: {
+            url: "/unknown/persons",
+            method: "GET"
+        }
     }
 
 

@@ -8,8 +8,14 @@ export async function getToken(cameraCode: string) {
          url: endPoints.camera.token.url.replace(":cameraCode", cameraCode),
          method: endPoints.camera.token.method,
      })
-     return res.data.data;
+     return res.data.data ?? [];
    } catch (error:any) {
-      throw new Error(error.response?.data?.message || error.response?.data?.errors || "Network Error");
+      if(error.response){
+         throw new Error(error.response.data.message || "Server Error");
+      } else if(error.request){
+         throw new Error("No response received from the server. Please check your network connection.");
+      } else {
+         throw new Error(error.message);
+      }
    }
 }

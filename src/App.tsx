@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import LiveMonitoring from '@/pages/LiveMonitoring';
-import Visitors from '@/pages/Visitors';
 import Alerts from '@/pages/Alerts';
 import Timeline from '@/pages/Timeline';
 import Dashboard from '@/pages/Dashboard';
@@ -18,6 +17,7 @@ import { lazy, Suspense } from 'react';
 const Employees = lazy(() => import('./pages/Employees/index'));
 const Cameras = lazy(() => import('./pages/Cameras/index'));
 const Attendance = lazy(() => import('./pages/Attendance/index'));
+const Visitors = lazy(() => import ("./pages/Visitors/index"))
 
 const ProtectedRoute = () => {
   const authStatus = useAppSelector((s) => s.auth.status);
