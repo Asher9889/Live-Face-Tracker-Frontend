@@ -6,10 +6,12 @@ import {
     TableHeader,
     TableRow
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import useVisitorDetails from "./hooks/useVisitorDetails";
+import VisitorRowSkeleton from "./VisitorTableSkeleton";
+import { ImagePreviewDialog } from "../common";
+
 // import { useState } from "react";
 
 const VisitorTable = () => {
@@ -32,13 +34,12 @@ const VisitorTable = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data?.map((visitor) => (
+                    {isLoading ? Array.from({ length: 5 }).map((_, index) => (
+                        <VisitorRowSkeleton key={index} />
+                    )) : data?.map((visitor) => (
                         <TableRow key={visitor.id} className="cursor-pointer" >
                             <TableCell>
-                                <Avatar className="h-12 w-12 rounded-md">
-                                    <AvatarImage src={visitor.avatar} />
-                                    <AvatarFallback>UNK</AvatarFallback>
-                                </Avatar>
+                                <ImagePreviewDialog src={visitor.avatar} />
                             </TableCell>
                             <TableCell>{new Date(visitor.firstSeen).toLocaleString()}</TableCell>
                             <TableCell>{new Date(visitor.lastSeen).toLocaleString()}</TableCell>
