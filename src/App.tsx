@@ -13,6 +13,7 @@ import { useEffect, useRef } from 'react';
 import appBootstrap from './bootstrap/appBootstrap';
 import authBootstrap from './bootstrap/authBootstrap';
 import { lazy, Suspense } from 'react';
+import { Toaster } from 'sonner';
 
 const Employees = lazy(() => import('./pages/Employees/index'));
 const Cameras = lazy(() => import('./pages/Cameras/index'));
@@ -117,6 +118,7 @@ function App() {
 
         </Routes>
       </Suspense>
+      <Toaster richColors position="top-right" />
     </BrowserRouter>
   );
 }
