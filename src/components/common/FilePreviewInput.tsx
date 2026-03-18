@@ -31,8 +31,8 @@ export default function FilePreviewInput<T extends FieldValues>({
   label,
 }: Props<T>) {
   return (
-    <Controller 
-      name={name} 
+    <Controller
+      name={name}
       control={control}
       defaultValue={[] as any}
       render={({ field: { value = [], onChange, ref }, fieldState }) => {
@@ -41,8 +41,8 @@ export default function FilePreviewInput<T extends FieldValues>({
         const files: File[] = Array.isArray(value)
           ? value
           : value
-          ? Array.from(value as FileList)
-          : [];
+            ? Array.from(value as FileList)
+            : [];
 
         // create preview URLs for images; revoke on cleanup
         const previews = useMemo(() => {

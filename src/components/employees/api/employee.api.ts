@@ -9,12 +9,21 @@ const createEmployee = async (employee: TEmployeeFormValues) => {
         fd.append("email", employee.email);
         fd.append("department", employee.department);
         fd.append("role", employee.role);
+        
+        // Add source and unknownId if present (for visitor conversion)
+        if (employee.source) {
+            fd.append("source", employee.source);
+        }
+        if (employee.unknownId) {
+            fd.append("unknownId", employee.unknownId);
+        }
+        
         for (let i = 0; i < employee.faces.length; i++) {
             fd.append("face", employee.faces[i]);
         }
-        const response = await api.request({
-            url: endPoints.employee.register.url,
-            method: endPoints.employee.register.method,
+        const response = await api.request({ 
+            url: employee.source === "unknown" ? endPoints.employee.registerFromUnknown.url : endPoints.employee.register.url,
+            method: employee.source === "unknown" ? endPoints.employee.registerFromUnknown.method : endPoints.employee.register.method,
             data: fd,
         });
         return response.data;
@@ -25,7 +34,7 @@ const createEmployee = async (employee: TEmployeeFormValues) => {
 
 };
 
-const getEmployee = async ({cursor, limit}: {cursor?: string, limit?: number}) => {
+const getEmployee = async ({ cursor, limit }: { cursor?: string, limit?: number }) => {
     try {
         const response = await api.request({
             url: endPoints.employee.get.url,

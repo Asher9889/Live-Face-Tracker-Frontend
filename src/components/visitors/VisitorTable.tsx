@@ -12,14 +12,16 @@ import { UserPlus } from "lucide-react";
 import useVisitorDetails from "./hooks/useVisitorDetails";
 import VisitorRowSkeleton from "./VisitorTableSkeleton";
 import { ImagePreviewDialog } from "../common";
+import type { VisitorDTO } from "./types/visitors.types";
 
 interface VisitorTableProps {
     selectedIds?: string[];
     onSelectionChange?: (id: string) => void;
     isMerging?: boolean;
+    onConvertToUser?: (visitor: VisitorDTO) => void;
 }
 
-const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false }: VisitorTableProps) => {
+const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, onConvertToUser }: VisitorTableProps) => {
     const { data, isLoading } = useVisitorDetails();
 
     const isSelectionMode = selectedIds.length > 0;
@@ -35,6 +37,11 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false }
         if (onSelectionChange) {
             onSelectionChange(visitorId);
         }
+    };
+
+    const handleConvertToUser = (visitor: VisitorDTO, event: React.MouseEvent) => {
+        event.stopPropagation();
+        onConvertToUser?.(visitor);
     };
 
     return (
@@ -55,16 +62,16 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false }
                         <VisitorRowSkeleton key={index} />
                     )) : data?.map((visitor) => {
                         const isSelected = selectedIds.includes(visitor.id);
-                        
+
                         return (
-                            <TableRow 
-                                key={visitor.id} 
+                            <TableRow
+                                key={visitor.id}
                                 className={`cursor-pointer transition-colors ${isSelected ? 'bg-blue-50 dark:bg-primary/10' : ''}`}
                                 onClick={(e) => handleRowClick(visitor.id, e)}
                             >
                                 {onSelectionChange && (
                                     <TableCell>
-                                        <Checkbox 
+                                        <Checkbox
                                             checked={isSelected}
                                             onCheckedChange={() => {
                                                 if (!isMerging && onSelectionChange) {
@@ -84,7 +91,7 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false }
                                 <TableCell>{visitor.eventCount}</TableCell>
                                 <TableCell className="text-right">
                                     {!isSelectionMode && (
-                                        <Button size="sm" className="gap-2" onClick={(e) => e.stopPropagation()}>
+                                        <Button size="sm" className="gap-2" onClick={(e) => handleConvertToUser(visitor, e)}>
                                             <UserPlus className="h-4 w-4" />
                                             Convert to User
                                         </Button>

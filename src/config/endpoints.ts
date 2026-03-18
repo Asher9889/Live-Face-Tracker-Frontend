@@ -21,6 +21,10 @@ const endPoints = {
         get: {
             url: '/employees',
             method: 'GET',
+        },
+        registerFromUnknown : {
+            url: '/employees/promote',
+            method: 'POST'
         }
     },
 

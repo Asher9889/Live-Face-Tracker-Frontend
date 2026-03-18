@@ -2,14 +2,19 @@ import { useState } from 'react';
 import VisitorTable from '@/components/visitors/VisitorTable';
 import MergeActionBar from '@/components/visitors/MergeActionBar';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar as CalendarIcon, Filter, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import RegistrationForm from '@/components/employees/RegistrationForm';
+import type { VisitorDTO } from '@/components/visitors/types/visitors.types';
 
 const Visitors = () => {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [isMerging, setIsMerging] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
+    const [selectedVisitor, setSelectedVisitor] = useState<VisitorDTO | null>(null);
     const queryClient = useQueryClient();
 
     const handleSelectionChange = (id: string) => {
@@ -25,6 +30,16 @@ const Visitors = () => {
         if (isMerging) return;
         setSelectedIds([]);
         setError(null);
+    };
+
+    const handleConvertToUser = (visitor: VisitorDTO) => {
+        setSelectedVisitor(visitor);
+        setIsRegisterDialogOpen(true);
+    };
+
+    const handleCloseRegisterDialog = () => {
+        setIsRegisterDialogOpen(false);
+        setSelectedVisitor(null);
     };
 
     const handleMerge = async () => {
@@ -92,6 +107,7 @@ const Visitors = () => {
                     selectedIds={selectedIds} 
                     onSelectionChange={handleSelectionChange} 
                     isMerging={isMerging}
+                    onConvertToUser={handleConvertToUser}
                 />
                 
                 {isMerging && (
@@ -108,6 +124,25 @@ const Visitors = () => {
                 onClear={handleClearSelection}
                 onMerge={handleMerge}
             />
+
+            {/* Register Employee Dialog for Visitor Conversion */}
+            <Dialog open={isRegisterDialogOpen} onOpenChange={setIsRegisterDialogOpen}>
+                <DialogContent className='max-w-xl'>
+                    <DialogHeader>
+                        <DialogTitle>Convert Visitor to Employee</DialogTitle>
+                        <DialogDescription>
+                            Register this unknown visitor as a new employee. Their face data will be pre-filled from the visitor logs.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {selectedVisitor && (
+                        <RegistrationForm 
+                            onClose={handleCloseRegisterDialog} 
+                            mode="create-from-unknown"
+                            unknownData={selectedVisitor}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
