@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { UserPlus } from "lucide-react";
+import { UserPlus, CheckCircle } from "lucide-react";
 import useVisitorDetails from "./hooks/useVisitorDetails";
 import VisitorRowSkeleton from "./VisitorTableSkeleton";
 import { ImagePreviewDialog } from "../common";
@@ -51,6 +51,7 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, 
                     <TableRow>
                         {onSelectionChange && <TableHead className="w-[50px]"></TableHead>}
                         <TableHead>Snapshot</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>First Seen</TableHead>
                         <TableHead>Last Seen</TableHead>
                         <TableHead>Occurrences</TableHead>
@@ -62,11 +63,12 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, 
                         <VisitorRowSkeleton key={index} />
                     )) : data?.map((visitor) => {
                         const isSelected = selectedIds.includes(visitor.id);
+                        const isConverted = visitor.status === 'converted';
 
                         return (
                             <TableRow
                                 key={visitor.id}
-                                className={`cursor-pointer transition-colors ${isSelected ? 'bg-blue-50 dark:bg-primary/10' : ''}`}
+                                className={`cursor-pointer transition-colors ${isSelected ? 'bg-blue-50 dark:bg-primary/10' : ''} ${isConverted ? 'opacity-60' : ''}`}
                                 onClick={(e) => handleRowClick(visitor.id, e)}
                             >
                                 {onSelectionChange && (
@@ -78,7 +80,7 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, 
                                                     onSelectionChange(visitor.id);
                                                 }
                                             }}
-                                            disabled={isMerging}
+                                            disabled={isMerging || isConverted}
                                             aria-label={`Select visitor ${visitor.id}`}
                                         />
                                     </TableCell>
@@ -86,14 +88,32 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, 
                                 <TableCell>
                                     <ImagePreviewDialog src={visitor.avatar} />
                                 </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-2">
+                                        {isConverted ? (
+                                            <>
+                                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                                <span className="text-sm font-medium text-green-700">Converted</span>
+                                            </>
+                                        ) : (
+                                            <span className="text-sm font-medium text-muted-foreground">Unknown</span>
+                                        )}
+                                    </div>
+                                </TableCell>
                                 <TableCell>{new Date(visitor.firstSeen).toLocaleString()}</TableCell>
                                 <TableCell>{new Date(visitor.lastSeen).toLocaleString()}</TableCell>
                                 <TableCell>{visitor.eventCount}</TableCell>
                                 <TableCell className="text-right">
-                                    {!isSelectionMode && (
+                                    {!isSelectionMode && !isConverted && (
                                         <Button size="sm" className="gap-2" onClick={(e) => handleConvertToUser(visitor, e)}>
                                             <UserPlus className="h-4 w-4" />
                                             Convert to User
+                                        </Button>
+                                    )}
+                                    {isConverted && (
+                                        <Button size="sm" variant="outline" disabled className="gap-2">
+                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                            Already Converted
                                         </Button>
                                     )}
                                 </TableCell>
