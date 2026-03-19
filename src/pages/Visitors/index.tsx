@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import RegistrationForm from '@/components/employees/RegistrationForm';
 import type { VisitorDTO } from '@/components/visitors/types/visitors.types';
+import { api } from '@/config';
+import endPoints from '@/config/endpoints';
 
 const Visitors = () => {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -44,35 +46,30 @@ const Visitors = () => {
 
     const handleMerge = async () => {
         if (selectedIds.length < 2) return;
-
+        console.log("it invoked")
         try {
             setIsMerging(true);
             setError(null);
 
-            const response = await fetch("/unknown/merge", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
+            const response = await api.request({
+                url: endPoints.employee.unknownMerge.url,
+                method: endPoints.employee.unknownMerge.method,
+                data: {
                     sourceIds: selectedIds
-                })
+                }
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || "Merge failed. Try again.");
+            if (response.status !== 200) {
+                throw new Error(response.data.message || "Merge failed. Try again.");
             }
 
-            // Success
             toast.success('Identities merged successfully');
             setSelectedIds([]);
-            
-            // Refetch visitor list
+
             queryClient.invalidateQueries({ queryKey: ['visitorDetails'] });
-            
-        } catch (err: any) {
-            const errorMessage = err.message || "Something went wrong";
+
+        } catch (err:any) {
+            const errorMessage = err.response?.data?.message || "Something went wrong";
             setError(errorMessage);
             toast.error(errorMessage);
         } finally {
@@ -103,13 +100,13 @@ const Visitors = () => {
             )}
 
             <div className="relative">
-                <VisitorTable 
-                    selectedIds={selectedIds} 
-                    onSelectionChange={handleSelectionChange} 
+                <VisitorTable
+                    selectedIds={selectedIds}
+                    onSelectionChange={handleSelectionChange}
                     isMerging={isMerging}
                     onConvertToUser={handleConvertToUser}
                 />
-                
+
                 {isMerging && (
                     <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] flex flex-col items-center justify-center z-10 rounded-md">
                         <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
@@ -118,7 +115,7 @@ const Visitors = () => {
                 )}
             </div>
 
-            <MergeActionBar 
+            <MergeActionBar
                 selectedCount={selectedIds.length}
                 isMerging={isMerging}
                 onClear={handleClearSelection}
@@ -135,8 +132,8 @@ const Visitors = () => {
                         </DialogDescription>
                     </DialogHeader>
                     {selectedVisitor && (
-                        <RegistrationForm 
-                            onClose={handleCloseRegisterDialog} 
+                        <RegistrationForm
+                            onClose={handleCloseRegisterDialog}
                             mode="create-from-unknown"
                             unknownData={selectedVisitor}
                         />

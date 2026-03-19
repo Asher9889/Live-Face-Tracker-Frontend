@@ -25,6 +25,10 @@ const endPoints = {
         registerFromUnknown : {
             url: '/employees/promote',
             method: 'POST'
+        },
+        unknownMerge : {
+            url: '/unknown/merge',
+            method: 'POST' 
         }
     },
 
