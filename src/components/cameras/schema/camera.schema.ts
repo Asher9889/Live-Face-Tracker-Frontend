@@ -16,6 +16,10 @@ export const cameraSchema = z.object({
     error: "Please select a gate type",
   }),
 
+  role: z.enum(["REGISTER", "ASSIST", "OBSERVE"], {
+    error: "Please select a camera role",
+  }),
+
   location: z
     .string({error: "Location is required"})
     .min(5, "Location must be at least 5 characters"),

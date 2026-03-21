@@ -69,6 +69,28 @@ const CameraRegistrationForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         </div>
 
         <div className="flex flex-col gap-2">
+          <ZodLabelInput schema={cameraSchema} name="role">Camera Role</ZodLabelInput>
+          <div>
+            <Select onValueChange={(val) => setValue("role", val as "REGISTER" | "ASSIST" | "OBSERVE")}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select camera role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel className='text-xs font-medium text-muted-foreground'>Camera role</SelectLabel>
+                  <SelectItem value="REGISTER">Register</SelectItem>
+                  <SelectItem value="ASSIST">Assist</SelectItem>
+                  <SelectItem value="OBSERVE">Observe</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {errors.role && (
+              <p className="text-xs mt-1 text-red-500">{errors.role.message}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
           <ZodLabelInput schema={cameraSchema} name="location">Location</ZodLabelInput>
           <div>
             <Input id="location" {...register("location")} />
