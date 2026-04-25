@@ -112,3 +112,72 @@ export interface AttendanceSessionDTO {
 
   sessions: AttendanceSessionEventDTO[];
 }
+
+export interface AttendanceEmployeeProfileDTO {
+  id: string;
+  employeeCode?: string;
+  name: string;
+  department?: string;
+  role?: string;
+  email?: string;
+  avatar?: string;
+  joinDate?: string;
+  status?: string;
+}
+
+export interface AttendanceEmployeeDailyEventDTO {
+  eventId: string;
+  timestamp: string;
+  type: AttendanceEventType;
+  cameraId?: string;
+  cameraCode?: string;
+  cameraName?: string;
+  confidence?: number;
+  status?: AttendanceStatus;
+  source?: AttendanceSource;
+  note?: string;
+}
+
+export interface AttendanceEmployeeDailyTimelineDTO {
+  employeeId: string;
+  date: string;
+  timezone?: string;
+  events: AttendanceEmployeeDailyEventDTO[];
+  computed?: {
+    firstEntryAt?: string;
+    lastExitAt?: string;
+    entriesCount?: number;
+    exitsCount?: number;
+    totalDurationMinutes?: number;
+    breakDurationMinutes?: number;
+    sessionStatus?: "COMPLETED" | "ONGOING" | "INCOMPLETE";
+    flags?: string[];
+  };
+}
+
+export interface AttendanceEmployeeMonthlySummaryDTO {
+  employeeId: string;
+  month: string;
+  workingDays?: number;
+  presentDays?: number;
+  avgHoursPerDay?: number;
+  lateArrivals?: number;
+  locationsVisited?: number;
+  totalDurationMinutes?: number;
+}
+
+export interface AttendanceEmployeeCalendarDayDTO {
+  date: string;
+  status: "PRESENT" | "ABSENT" | "PARTIAL" | "HOLIDAY";
+  firstEntryAt?: string | null;
+  lastExitAt?: string | null;
+  durationMinutes?: number;
+  hasAnomaly?: boolean;
+  flags?: string[];
+}
+
+export interface AttendanceEmployeeCalendarDTO {
+  employeeId: string;
+  month: string;
+  days: AttendanceEmployeeCalendarDayDTO[];
+}

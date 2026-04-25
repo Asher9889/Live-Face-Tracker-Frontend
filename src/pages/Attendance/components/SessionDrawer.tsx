@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, AlertTriangle, ExternalLink } from "lucide-react";
-import type { AttendanceSession } from "@/pages/Attendance/types/attendence.types";
 import { useTodayAttendanceSession } from "../hooks/useTodayAttendanceSession";
 import { Skeleton } from "@/components/ui/skeleton";
 import { envs } from "@/config";
@@ -15,10 +14,28 @@ interface SessionDrawerProps {
     employeeId?: string;
 }
 
+function formatDurationLabel(minutes?: number): string {
+    const safeMinutes = Math.max(0, Math.round(minutes ?? 0));
+
+    if (safeMinutes < 60) {
+        return `${safeMinutes}m`;
+    }
+
+    const hours = Math.floor(safeMinutes / 60);
+    const remainderMinutes = safeMinutes % 60;
+
+    if (remainderMinutes === 0) {
+        return `${hours}h`;
+    }
+
+    return `${hours}h ${remainderMinutes}m`;
+}
+
 const SessionDrawer = ({ open, onClose, employeeId }: SessionDrawerProps) => {
     if (!employeeId) return null;
 
     const { data, isLoading } = useTodayAttendanceSession(employeeId, open);
+    const employeeIdForRoute = data?.employee?.id || employeeId;
 
     const avatar = data?.employee?.avatar && `${envs.minioServerUrl}/${envs.minioBucketName}/${data.employee.avatar}`;
 
@@ -26,89 +43,6 @@ const SessionDrawer = ({ open, onClose, employeeId }: SessionDrawerProps) => {
     const sessions = data?.sessions;
 
     console.log("sessions are", sessions)
-    // TEMP mocked session (replace with `data` later)
-    const session: AttendanceSession = {
-        id: "sess_1",
-        employeeId: "EMP-1002",
-        date: "2024-04-15",
-        firstEntry: "2024-04-15T09:12:00Z",
-        lastExit: "2024-04-15T18:42:00Z",
-        totalDuration: 510,
-        breakDuration: 45,
-        status: "COMPLETED",
-        flags: ["LATE_ENTRY"],
-        events: [
-            {
-                id: "evt_1",
-                employeeId: "EMP-1002",
-                employeeIdToView: "EMP-1002",
-                employeeName: "Alice Smith",
-                employeeAvatar: "/avatars/alice.png",
-                department: "Engineering",
-                designation: "Senior Developer",
-                timestamp: "2024-04-15T09:12:00Z",
-                type: "ENTRY",
-                gate: "Main Entrance",
-                status: "VERIFIED",
-                confidence: 98.5,
-                source: "FACE_AI",
-                isLate: true,
-                isEarlyExit: false,
-            },
-            {
-                id: "evt_2",
-                employeeId: "EMP-1002",
-                employeeIdToView: "EMP-1002",
-                employeeName: "Alice Smith",
-                employeeAvatar: "/avatars/alice.png",
-                department: "Engineering",
-                designation: "Senior Developer",
-                timestamp: "2024-04-15T13:00:00Z",
-                type: "EXIT",
-                gate: "Back Gate",
-                status: "VERIFIED",
-                confidence: 99.1,
-                source: "FACE_AI",
-                isLate: false,
-                isEarlyExit: false,
-            },
-            {
-                id: "evt_3",
-                employeeId: "EMP-1002",
-                employeeIdToView: "EMP-1002",
-                employeeName: "Alice Smith",
-                employeeAvatar: "/avatars/alice.png",
-                department: "Engineering",
-                designation: "Senior Developer",
-                timestamp: "2024-04-15T14:00:00Z",
-                type: "ENTRY",
-                gate: "Main Entrance",
-                status: "VERIFIED",
-                confidence: 97.2,
-                source: "FACE_AI",
-                isLate: false,
-                isEarlyExit: false,
-            },
-            {
-                id: "evt_4",
-                employeeId: "EMP-1002",
-                employeeIdToView: "EMP-1002",
-                employeeName: "Alice Smith",
-                employeeAvatar: "/avatars/alice.png",
-                department: "Engineering",
-                designation: "Senior Developer",
-                timestamp: "2024-04-15T18:42:00Z",
-                type: "EXIT",
-                gate: "Main Entrance",
-                status: "VERIFIED",
-                confidence: 98.9,
-                source: "FACE_AI",
-                isLate: false,
-                isEarlyExit: false,
-            },
-        ],
-    };
-
     const timelineEvents = !data ? []
         : data.sessions.flatMap((s, idx) => {
             const events = [];
@@ -191,7 +125,7 @@ const SessionDrawer = ({ open, onClose, employeeId }: SessionDrawerProps) => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() =>
-                                    window.open(`/attendance/employee/${session.employeeId}`, "_blank")
+                                    window.open(`/attendance/employee/${employeeIdForRoute}`, "_blank")
                                 }
                             >
                                 <ExternalLink className="h-4 w-4" />
@@ -226,8 +160,8 @@ const SessionDrawer = ({ open, onClose, employeeId }: SessionDrawerProps) => {
                                         </p>
                                         <p className="text-xl font-bold">
                                             {i === 0
-                                                ? (data?.totalDurationMinutes?.toFixed(1) ?? "0") + "m"
-                                                : (data?.breakDurationMinutes?.toFixed(1) ?? "0") + "m"}
+                                                ? formatDurationLabel(data?.totalDurationMinutes)
+                                                : formatDurationLabel(data?.breakDurationMinutes)}
                                         </p>
                                     </>
                                 )}

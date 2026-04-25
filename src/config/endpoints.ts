@@ -22,6 +22,10 @@ const endPoints = {
             url: '/employees',
             method: 'GET',
         },
+        getById: {
+            url: '/employees/:employeeId',
+            method: 'GET'
+        },
         registerFromUnknown : {
             url: '/employees/promote',
             method: 'POST'
@@ -58,6 +62,22 @@ const endPoints = {
         },
         todaySession: {
             url: '/attendance/today/:employeeId',
+            method: 'GET'
+        },
+        employeeSummary: {
+            url: '/attendance/employees/:employeeId/summary',
+            method: 'GET'
+        },
+        employeeTimeline: {
+            url: '/attendance/employees/:employeeId/timeline',
+            method: 'GET'
+        },
+        employeeCalendar: {
+            url: '/attendance/employees/:employeeId/calendar',
+            method: 'GET'
+        },
+        employeeExport: {
+            url: '/attendance/employees/:employeeId/export',
             method: 'GET'
         }
     },

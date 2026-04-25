@@ -117,6 +117,7 @@ interface VisitorTableProps {
 
 const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, onConvertToUser }: VisitorTableProps) => {
     const { data, isLoading } = useVisitorDetails();
+    const unknownVisitors = (data ?? []).filter((visitor) => visitor.status === "unknown");
 
     const isSelectionMode = selectedIds.length > 0;
 
@@ -155,7 +156,7 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, 
                 <TableBody>
                     {isLoading ? Array.from({ length: 5 }).map((_, index) => (
                         <VisitorRowSkeleton key={index} />
-                    )) : data?.map((visitor) => {
+                    )) : unknownVisitors.map((visitor) => {
                         const isSelected = selectedIds.includes(visitor.id);
                         const isConverted = visitor.status === 'converted';
 
