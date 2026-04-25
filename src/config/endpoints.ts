@@ -81,6 +81,12 @@ const endPoints = {
             method: 'GET'
         }
     },
+    dashboard: {
+        attendanceSummary: {
+            url: '/dashboard/attendance-summary',
+            method: 'GET'
+        }
+    },
     unknown: {
         getAllVisitors: {
             url: "/unknown/persons",

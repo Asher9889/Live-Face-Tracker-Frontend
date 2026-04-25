@@ -7,14 +7,13 @@ interface StatsCardsProps {
 }
 
 const StatsCards = ({ stats }: StatsCardsProps) => {
-    // Default/Loading state values
     const data = stats || {
-        totalRecords: 1250,
-        uniqueEmployees: 450,
-        totalWorkDuration: 3840, // minutes
-        unknownEvents: 5,
-        lateEntries: 12,
-        earlyExits: 3
+        totalRecords: 0,
+        uniqueEmployees: 0,
+        totalWorkDuration: 0,
+        unknownEvents: 0,
+        lateEntries: 0,
+        earlyExits: 0
     };
 
     const cards = [
