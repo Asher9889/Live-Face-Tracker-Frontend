@@ -12,6 +12,7 @@ interface SessionDrawerProps {
     open: boolean;
     onClose: () => void;
     employeeId?: string;
+    date?: string;
 }
 
 function formatDurationLabel(minutes?: number): string {
@@ -31,10 +32,10 @@ function formatDurationLabel(minutes?: number): string {
     return `${hours}h ${remainderMinutes}m`;
 }
 
-const SessionDrawer = ({ open, onClose, employeeId }: SessionDrawerProps) => {
+const SessionDrawer = ({ open, onClose, employeeId, date }: SessionDrawerProps) => {
     if (!employeeId) return null;
 
-    const { data, isLoading } = useTodayAttendanceSession(employeeId, open);
+    const { data, isLoading } = useTodayAttendanceSession(employeeId, open, date);
     const employeeIdForRoute = data?.employee?.id || employeeId;
 
     const avatar = data?.employee?.avatar && `${envs.minioServerUrl}/${envs.minioBucketName}/${data.employee.avatar}`;

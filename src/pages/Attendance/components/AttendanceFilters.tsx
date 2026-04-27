@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,20 +19,35 @@ import { cn } from "@/utils/cn";
 interface AttendanceFiltersProps {
     className?: string;
     onFiltersChange: (filters: AttendanceFiltersState) => void;
+    selectedDate?: Date;
+    onDateChange?: (date: Date) => void;
 }
 
-const AttendanceFilters = ({ className, onFiltersChange }: AttendanceFiltersProps) => {
-    const [date, setDate] = useState<Date | undefined>(new Date());
+const AttendanceFilters = ({ 
+    className, 
+    onFiltersChange,
+    selectedDate,
+    onDateChange 
+}: AttendanceFiltersProps) => {
+    const [date, setDate] = useState<Date | undefined>(selectedDate || new Date());
     const [isOpen, setIsOpen] = useState(false);
 
-    // Mock initial state - in real app would come from props or URL
     const [filters, setFilters] = useState<AttendanceFiltersState>({
-        dateRange: { from: new Date() },
+        dateRange: { from: date },
         employeeId: "",
-        department: "all",
-        status: [],
-        flags: []
+        department: undefined,
     });
+
+    // Update filters when date changes
+    useEffect(() => {
+        if (date) {
+            setFilters(prev => ({ 
+                ...prev, 
+                dateRange: { from: date } 
+            }));
+            onDateChange?.(date);
+        }
+    }, [date, onDateChange]);
 
     const handleApply = () => {
         onFiltersChange(filters);
@@ -41,20 +55,21 @@ const AttendanceFilters = ({ className, onFiltersChange }: AttendanceFiltersProp
     };
 
     const handleReset = () => {
-        const resetState = {
+        const resetState: AttendanceFiltersState = {
             dateRange: { from: new Date() },
             employeeId: "",
-            department: "all",
-            status: [],
-            flags: []
+            department: undefined,
         };
         setFilters(resetState);
+        setDate(new Date());
         onFiltersChange(resetState);
     };
 
+    const isFiltered = !!filters.employeeId || !!filters.department;
+
     return (
         <div className={cn("flex flex-col gap-4", className)}>
-            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-2">
                 {/* Date Picker */}
                 <Popover>
                     <PopoverTrigger asChild>
@@ -73,19 +88,19 @@ const AttendanceFilters = ({ className, onFiltersChange }: AttendanceFiltersProp
                         <Calendar
                             mode="single"
                             selected={date}
-                            onSelect={(d) => {
-                                setDate(d);
-                                setFilters(prev => ({ ...prev, dateRange: { from: d } }));
-                            }}
+                            onSelect={setDate}
                             initialFocus
                         />
                     </PopoverContent>
                 </Popover>
 
-                {/* Quick Filters */}
+                {/* Department Filter */}
                 <Select
-                    value={filters.department}
-                    onValueChange={(val) => setFilters(prev => ({ ...prev, department: val }))}
+                    value={filters.department || "all"}
+                    onValueChange={(val) => setFilters(prev => ({ 
+                        ...prev, 
+                        department: val === "all" ? undefined : val 
+                    }))}
                 >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Department" />
@@ -95,21 +110,27 @@ const AttendanceFilters = ({ className, onFiltersChange }: AttendanceFiltersProp
                         <SelectItem value="engineering">Engineering</SelectItem>
                         <SelectItem value="hr">HR</SelectItem>
                         <SelectItem value="sales">Sales</SelectItem>
+                        <SelectItem value="finance">Finance</SelectItem>
                     </SelectContent>
                 </Select>
 
                 <Button
                     variant="outline"
-                    className={cn("gap-2", isOpen && "bg-accent")}
+                    className={cn("gap-2", isOpen && "bg-accent", isFiltered && "border-blue-500")}
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     <Filter className="h-4 w-4" />
                     More Filters
                 </Button>
 
-                {(filters.status?.length ?? 0) > 0 && (
-                    <Button variant="ghost" size="sm" onClick={handleReset} className="text-muted-foreground">
-                        Reset
+                {isFiltered && (
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleReset} 
+                        className="text-muted-foreground hover:text-foreground"
+                    >
+                        Clear Filters
                         <X className="ml-2 h-3 w-3" />
                     </Button>
                 )}
@@ -117,65 +138,34 @@ const AttendanceFilters = ({ className, onFiltersChange }: AttendanceFiltersProp
 
             {/* Advanced Filters Panel */}
             {isOpen && (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-4 border rounded-lg bg-card text-card-foreground shadow-sm animate-in slide-in-from-top-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border rounded-lg bg-card text-card-foreground shadow-sm animate-in slide-in-from-top-2">
                     <div className="space-y-3">
-                        <h4 className="font-medium text-sm text-muted-foreground">Detailed Search</h4>
+                        <h4 className="font-medium text-sm text-muted-foreground">Employee Search</h4>
                         <div className="space-y-2">
-                            <Label>Employee Name / ID</Label>
+                            <Label htmlFor="employee-search">Employee Name / ID</Label>
                             <Input
+                                id="employee-search"
                                 placeholder="Search employee..."
-                                value={filters.employeeId}
+                                value={filters.employeeId || ""}
                                 onChange={(e) => setFilters(prev => ({ ...prev, employeeId: e.target.value }))}
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-3">
-                        <h4 className="font-medium text-sm text-muted-foreground">Event Type</h4>
-                        <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="entry" />
-                                <label htmlFor="entry" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Entry
-                                </label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="exit" />
-                                <label htmlFor="exit" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Exit
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-3">
-                        <h4 className="font-medium text-sm text-muted-foreground">Status & Flags</h4>
-                        <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="unknown" />
-                                <label htmlFor="unknown" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Unknown Person
-                                </label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="late" />
-                                <label htmlFor="late" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Late Entry
-                                </label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="early" />
-                                <label htmlFor="early" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    Early Exit
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex items-end justify-end">
+                    {/* Action Buttons */}
+                    <div className="flex flex-col items-end justify-end gap-2">
                         <Button onClick={handleApply} className="w-full md:w-auto">
                             Apply Filters
                         </Button>
+                        {isFiltered && (
+                            <Button 
+                                variant="outline"
+                                onClick={handleReset}
+                                className="w-full md:w-auto"
+                            >
+                                Reset All
+                            </Button>
+                        )}
                     </div>
                 </div>
             )}

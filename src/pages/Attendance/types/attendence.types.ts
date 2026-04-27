@@ -8,11 +8,90 @@ export interface AttendanceEvent extends AttendanceRecord {
   date: string;
 };
 
+// Request DTOs
+export interface AttendanceEventsQueryParams {
+  date?: string; // YYYY-MM-DD format for single day
+  dateFrom?: string; // YYYY-MM-DD format for range
+  dateTo?: string; // YYYY-MM-DD format for range
+  employeeId?: string;
+  department?: string;
+  status?: AttendanceStatus[];
+  eventType?: AttendanceEventType[];
+  registeredOnly?: boolean;
+  includeUnregistered?: boolean;
+  limit?: number; // pagination
+  offset?: number; // pagination
+  sortBy?: 'timestamp' | 'employeeName' | 'gate'; // sorting
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface AttendanceCurrentStateQueryParams {
+  date?: string;
+  employeeId?: string;
+  department?: string;
+  registeredOnly?: boolean;
+  includeCompleted?: boolean;
+  limit?: number;
+  offset?: number;
+  sortBy?: 'firstEntryAt' | 'lastSeenAt' | 'employeeName' | 'department';
+  sortOrder?: 'asc' | 'desc';
+}
+
+// Response DTOs
 export type AttendanceEventsResponse = {
   attendanceEvents: AttendanceEvent[];
   nextCursor: number | null;
   hasMore: boolean;
 };
+
+export type AttendanceDailyResponse = {
+  date: string; // YYYY-MM-DD
+  events: AttendanceRecord[];
+  stats: AttendanceStats;
+  pagination: {
+    limit: number;
+    offset: number;
+    total: number;
+  };
+};
+
+export interface AttendanceCurrentStateEmployeeDTO {
+  id: string;
+  employeeId: string;
+  employeeCode?: string;
+  employeeName: string;
+  employeeAvatar?: string;
+  department?: string;
+  role?: string;
+  currentStatus: 'PRESENT' | 'ON_BREAK' | 'IN_SESSION';
+  firstEntryAt?: string;
+  lastSeenAt?: string;
+  currentGate?: string;
+  currentCameraCode?: string;
+  workDurationMinutes?: number;
+  breakDurationMinutes?: number;
+  flags?: Array<'LATE_ENTRY' | 'EARLY_EXIT' | 'MISSING_EXIT' | 'OVERTIME'>;
+  sessionId?: string;
+}
+
+export interface AttendanceCurrentStateStats {
+  totalEmployeesPresent: number;
+  inSession: number;
+  onBreak: number;
+  lateArrivals: number;
+  totalActiveSessions: number;
+}
+
+export interface AttendanceCurrentStateResponse {
+  date: string;
+  presentEmployees: AttendanceCurrentStateEmployeeDTO[];
+  stats: AttendanceCurrentStateStats;
+  pagination?: {
+    limit: number;
+    offset: number;
+    total: number;
+  };
+}
 
 
 export type AttendanceEventType = 'ENTRY' | 'EXIT';

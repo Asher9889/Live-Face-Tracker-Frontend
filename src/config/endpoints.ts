@@ -56,12 +56,28 @@ const endPoints = {
     },
 
     attendance: {
+        currentState: {
+            url: '/attendance/current-state',
+            method: 'GET'
+        },
         getAllEvents: {
             url: '/attendance/events',
             method: 'GET'
         },
+        getByDate: {
+            url: '/attendance/date',
+            method: 'GET'
+        },
+        getByDateRange: {
+            url: '/attendance/range',
+            method: 'GET'
+        },
         todaySession: {
             url: '/attendance/today/:employeeId',
+            method: 'GET'
+        },
+        employeeSession: {
+            url: '/attendance/employees/:employeeId/session',
             method: 'GET'
         },
         employeeSummary: {

@@ -3,8 +3,12 @@ import type { AttendanceEvent,AttendanceRecord } from "../types/attendence.types
 /**
  * Convert one backend AttendanceEvent into a UI AttendanceRecord
  */
-export function mapAttendanceEventToRecord(event: AttendanceEvent): AttendanceRecord {
+export function mapAttendanceEventToRecord(event: AttendanceEvent): AttendanceRecord | null {
     const { employeeId } = event;
+    if (event.status === 'UNKNOWN' || !employeeId || !event.employeeName || event.employeeName.toLowerCase() === 'unknown') {
+        return null;
+    }
+
   return {
     id: event.id,
 
@@ -32,5 +36,7 @@ export function mapAttendanceEventToRecord(event: AttendanceEvent): AttendanceRe
  * Convert multiple events
  */
 export function mapAttendanceEventsToRecords(events: AttendanceEvent[]): AttendanceRecord[] {
-  return events.map(mapAttendanceEventToRecord);
+  return events
+    .map(mapAttendanceEventToRecord)
+    .filter((record): record is AttendanceRecord => Boolean(record));
 }

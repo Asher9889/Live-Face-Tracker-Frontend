@@ -1,9 +1,9 @@
 import { Users, UserX, Clock, ArrowRightFromLine, ArrowLeftFromLine } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { AttendanceStats } from '@/pages/Attendance/types/attendence.types';
+import type { AttendanceCurrentStateStats, AttendanceStats } from '@/pages/Attendance/types/attendence.types';
 
 interface StatsCardsProps {
-    stats?: AttendanceStats;
+    stats?: AttendanceStats | AttendanceCurrentStateStats;
 }
 
 const StatsCards = ({ stats }: StatsCardsProps) => {
@@ -16,46 +16,49 @@ const StatsCards = ({ stats }: StatsCardsProps) => {
         earlyExits: 0
     };
 
+    const hasCurrentStateShape = 'totalEmployeesPresent' in data;
+    const currentState = hasCurrentStateShape ? data : null;
+
     const cards = [
         {
-            title: "Total Records",
-            value: data.totalRecords.toLocaleString(),
-            description: "Entries & Exits today",
+            title: hasCurrentStateShape ? "Present Employees" : "Total Records",
+            value: hasCurrentStateShape ? String(currentState?.totalEmployeesPresent ?? 0) : data.totalRecords.toLocaleString(),
+            description: hasCurrentStateShape ? "Currently inside" : "Entries & Exits today",
             icon: Users,
             color: "text-blue-500",
         },
         {
-            title: "Present Employees",
-            value: data.uniqueEmployees.toString(),
-            description: "Unique individuals",
+            title: hasCurrentStateShape ? "In Session" : "Present Employees",
+            value: hasCurrentStateShape ? String(currentState?.inSession ?? 0) : data.uniqueEmployees.toString(),
+            description: hasCurrentStateShape ? "Active right now" : "Unique individuals",
             icon: Users,
             color: "text-green-500",
         },
         {
-            title: "Total Hours",
-            value: `${Math.floor(data.totalWorkDuration / 60)}h ${data.totalWorkDuration % 60}m`,
-            description: "Cumulative work time",
+            title: hasCurrentStateShape ? "On Break" : "Total Hours",
+            value: hasCurrentStateShape ? String(currentState?.onBreak ?? 0) : `${Math.floor(data.totalWorkDuration / 60)}h ${data.totalWorkDuration % 60}m`,
+            description: hasCurrentStateShape ? "Paused sessions" : "Cumulative work time",
             icon: Clock,
             color: "text-indigo-500",
         },
         {
-            title: "Unknown Events",
-            value: data.unknownEvents.toString(),
-            description: "Requires attention",
+            title: hasCurrentStateShape ? "Late Arrivals" : "Unknown Events",
+            value: hasCurrentStateShape ? String(currentState?.lateArrivals ?? 0) : data.unknownEvents.toString(),
+            description: hasCurrentStateShape ? "Today" : "Requires attention",
             icon: UserX,
             color: "text-red-500",
         },
         {
-            title: "Late Entries",
-            value: data.lateEntries.toString(),
-            description: "After 9:30 AM",
+            title: hasCurrentStateShape ? "Active Sessions" : "Late Entries",
+            value: hasCurrentStateShape ? String(currentState?.totalActiveSessions ?? 0) : data.lateEntries.toString(),
+            description: hasCurrentStateShape ? "Tracked now" : "After 9:30 AM",
             icon: ArrowRightFromLine,
             color: "text-orange-500",
         },
         {
-            title: "Early Exits",
-            value: data.earlyExits.toString(),
-            description: "Before 6:00 PM",
+            title: hasCurrentStateShape ? "Live State" : "Early Exits",
+            value: hasCurrentStateShape ? 'Current' : data.earlyExits.toString(),
+            description: hasCurrentStateShape ? "Present employees" : "Before 6:00 PM",
             icon: ArrowLeftFromLine,
             color: "text-yellow-500",
         },
