@@ -37,6 +37,20 @@ export interface AttendanceCurrentStateQueryParams {
   sortOrder?: 'asc' | 'desc';
 }
 
+export type AttendanceExportScope = 'ALL_EMPLOYEES' | 'SELECTED_EMPLOYEES';
+export type AttendanceExportFormat = 'csv' | 'xlsx';
+
+export interface AttendanceExportReportRequest {
+  date: string;
+  scope: AttendanceExportScope;
+  format?: AttendanceExportFormat;
+  employeeIds?: string[];
+  department?: string;
+  registeredOnly?: boolean;
+  includeUnregistered?: boolean;
+  timezone?: string;
+}
+
 // Response DTOs
 export type AttendanceEventsResponse = {
   attendanceEvents: AttendanceEvent[];

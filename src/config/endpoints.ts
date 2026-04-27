@@ -95,6 +95,10 @@ const endPoints = {
         employeeExport: {
             url: '/attendance/employees/:employeeId/export',
             method: 'GET'
+        },
+        reportExport: {
+            url: '/attendance/reports/export',
+            method: 'POST'
         }
     },
     dashboard: {

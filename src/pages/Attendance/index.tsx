@@ -4,11 +4,11 @@ import StatsCards from '@/components/attendance/StatsCards';
 import AttendanceTable from '@/components/attendance/AttendanceTable';
 import AttendanceFilters from './components/AttendanceFilters';
 import SessionDrawer from './components/SessionDrawer';
-import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
 import { useAttendanceCurrentState } from './hooks/useAttendance';
 import type { AttendanceCurrentStateEmployeeDTO, AttendanceFiltersState } from './types/attendence.types';
 import AttendanceTableSkeleton from '@/components/attendance/AttendanceTableSkeleton';
+import AttendanceExportDialog from './components/AttendanceExportDialog';
+import { Button } from '@/components/ui/button';
 
 const Attendance = () => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -42,11 +42,6 @@ const Attendance = () => {
         setIsDrawerOpen(true);
     };
 
-    const handleExport = () => {
-        // TODO: Implement export functionality
-        console.log('Export attendance report for', format(selectedDate, 'yyyy-MM-dd'));
-    };
-
     if (isLoading) {
         return <AttendanceTableSkeleton />;
     }
@@ -73,12 +68,7 @@ const Attendance = () => {
                         Showing employees currently present for {format(selectedDate, 'MMMM dd, yyyy')}
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={handleExport}>
-                        <Download className="mr-2 h-4 w-4" />
-                        Export Report
-                    </Button>
-                </div>
+                <AttendanceExportDialog selectedDate={selectedDate} />
             </div>
 
             {/* Stats Cards and Filters Section */}

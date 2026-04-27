@@ -3,6 +3,7 @@ import endPoints from "@/config/endpoints";
 import {
     type AttendanceEmployeeCalendarDTO,
     type AttendanceCurrentStateQueryParams,
+    type AttendanceExportReportRequest,
     type AttendanceCurrentStateResponse,
     type AttendanceDailyResponse,
     type AttendanceEmployeeDailyTimelineDTO,
@@ -213,6 +214,27 @@ export async function exportAttendanceEmployeeHistory(
         return response.data;
     } catch (error) {
         console.error('Error exporting attendance employee history:', error);
+        throw error;
+    }
+}
+
+export async function exportAttendanceReport(
+    payload: AttendanceExportReportRequest
+): Promise<Blob> {
+    try {
+        const response = await api.request({
+            url: endPoints.attendance.reportExport.url,
+            method: endPoints.attendance.reportExport.method,
+            data: {
+                ...payload,
+                registeredOnly: payload.registeredOnly ?? true,
+            },
+            responseType: 'blob',
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('Error exporting attendance report:', error);
         throw error;
     }
 }

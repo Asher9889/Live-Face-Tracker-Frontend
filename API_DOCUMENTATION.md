@@ -528,6 +528,63 @@ GET /attendance/employees/emp_123/export?from=2024-04-01&to=2024-04-30&format=cs
 - Returns a file blob with content-type `application/csv` or `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
 - Filename: `attendance_emp_123_2024-04-01_2024-04-30.csv`
 
+### 9. Export Attendance Report (All Employees or Selected Employees)
+**Endpoint:** `POST /attendance/reports/export`
+
+**Purpose:** Generate a downloadable report from the `/attendance` page modal. This endpoint supports both a full attendance report for all employees and an employee-wise report for a selected subset of employees.
+
+**Request Body:**
+```typescript
+{
+  "date": "2026-04-28",                 // Required: report date in YYYY-MM-DD format
+  "scope": "ALL_EMPLOYEES" | "SELECTED_EMPLOYEES",
+  "format": "csv" | "xlsx",           // Optional, default: csv
+  "employeeIds": ["emp_101", "emp_205"], // Required when scope = SELECTED_EMPLOYEES
+  "department": "Engineering",         // Optional: filter to one department
+  "registeredOnly": true,                // Optional, default: true
+  "includeUnregistered": false,         // Optional, default: false
+  "timezone": "Asia/Kolkata"           // Optional, default: UTC
+}
+```
+
+**Behavior:**
+- `scope = ALL_EMPLOYEES` produces one file containing every matched employee for the chosen date.
+- `scope = SELECTED_EMPLOYEES` produces a report only for the supplied `employeeIds`.
+- If `registeredOnly = true`, the backend must exclude unresolved or unknown faces from the export.
+- If `includeUnregistered = true`, the backend may include unknown rows, but that should be an explicit admin/audit use case.
+
+**Response:**
+- Returns a file blob.
+- `Content-Type` should be either `application/csv` or `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`.
+- Suggested filename pattern:
+  - `attendance-report-all-employees-2026-04-28.csv`
+  - `attendance-report-employees-3-2026-04-28.xlsx`
+
+**Recommended CSV/XLSX columns:**
+- `employeeId`
+- `employeeCode`
+- `employeeName`
+- `department`
+- `role`
+- `date`
+- `firstEntryAt`
+- `lastSeenAt`
+- `totalWorkDurationMinutes`
+- `breakDurationMinutes`
+- `currentStatus`
+- `flags`
+- `present`
+- `lateArrival`
+- `earlyExit`
+
+**Frontend modal flow:**
+- Open the modal from `Export Report`.
+- Pick the report date.
+- Choose `All employees report` or `Employee-wise report`.
+- If employee-wise, search and select one or more employees.
+- Pick `CSV` or `XLSX`.
+- Click `Download report`.
+
 ---
 
 ## Query Parameters
