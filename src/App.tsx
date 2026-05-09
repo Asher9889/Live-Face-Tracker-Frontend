@@ -18,6 +18,7 @@ import { Toaster } from 'sonner';
 const Employees = lazy(() => import('./pages/Employees/index'));
 const Cameras = lazy(() => import('./pages/Cameras/index'));
 const Attendance = lazy(() => import('./pages/Attendance/index'));
+const Reports = lazy(() => import('./pages/Attendance/Reports/index'));
 const Visitors = lazy(() => import ("./pages/Visitors/index"))
 
 const ProtectedRoute = () => {
@@ -99,6 +100,7 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="live" element={<LiveMonitoring />} />
               <Route path="attendance" element={<Attendance />} />
+              <Route path="attendance/reports" element={<Reports />} />
               <Route
                 path="attendance/employee/:id"
                 element={<EmployeeHistory />}
