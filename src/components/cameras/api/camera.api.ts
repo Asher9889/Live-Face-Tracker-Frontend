@@ -65,4 +65,50 @@ const getCamera = async () => {
   }
 };
 
-export { createCamera, getCamera };
+const updateCamera = async (cameraId: string, camera: TCameraFormValues) => {
+  console.log("Updating camera with ID:", cameraId, "and data:", camera);
+  try {
+
+    const cameraData = {
+      ...camera,
+      streamConfig: {
+        aiFps: 15,
+        displayFps: 25
+      },
+      enabled: true,
+      roi: {
+        enabled: true,
+        polygons: [
+          [10, 20],
+          [200, 20],
+          [200, 250],
+          [10, 250]
+        ]
+      },
+      wsStreamId: camera.code,
+      status: {
+        online: true,
+        lastCheckedAt: new Date(),
+        lastFrameAt: new Date()
+      }
+    }
+
+
+    const response = await api.request({
+      url: endPoints.camera.update(cameraId).url,
+      method: endPoints.camera.update(cameraId).method,
+      data: cameraData,
+    });
+
+    return response.data;
+  } catch (err: any) {
+    const backendMessage =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      "Something went wrong. Please try again.";
+
+    throw new Error(backendMessage);
+  }
+};
+
+export { createCamera, getCamera, updateCamera };

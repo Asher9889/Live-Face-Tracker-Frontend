@@ -52,7 +52,11 @@ const endPoints = {
         get: {
             url: '/cameras',
             method: 'GET'
-        }
+        },
+        update : (cameraId: string) => ({
+            url: `/cameras/${cameraId}`,
+            method: 'PUT'
+        })
     },
 
     attendance: {

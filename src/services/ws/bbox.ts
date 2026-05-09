@@ -7,10 +7,7 @@ type Listener = (payload: BBoxPayload) => void;
 // cameraCode -> listeners
 const listeners = new Map<string, Set<Listener>>();
 
-export function subscribeBBox(
-  cameraCode: string,
-  listener: Listener
-) {
+export function subscribeBBox( cameraCode: string, listener: Listener) {
   let set = listeners.get(cameraCode);
 
   if (!set) {

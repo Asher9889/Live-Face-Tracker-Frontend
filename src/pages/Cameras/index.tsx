@@ -2,14 +2,7 @@ import { useState } from "react";
 import CameraList from "@/components/cameras/CameraList";
 import CameraRegistrationForm from "@/components/cameras/CameraRegistrationForm";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 
 const Cameras = () => {

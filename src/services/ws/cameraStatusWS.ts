@@ -34,10 +34,10 @@ export default function initCameraStatusWS() {
                     lastFrameAt: lastFrameAt,
                 }))
                 break;
-    // cameraCode, trackId, bbox, timestamp, personId, similarity
+            // cameraCode, trackId, bbox, timestamp, personId, similarity
             case WS_EVENTS.FACE_BBOX:
                 const { cameraCode, trackId, bbox, personId, similarity, eventTs, frameTs } = message.payload;
-                   if(message.payload.event !== "track_lost"){
+                if (message.payload.event !== "track_lost") {
                     // store.dispatch(bboxUpserted({
                     //     cameraCode,
                     //     trackId,
@@ -47,20 +47,20 @@ export default function initCameraStatusWS() {
                     //     eventTs,
                     //     frameTs,
                     // }))
-                    emitBBox(cameraCode, {trackId, bbox, personId, similarity, eventTs, frameTs})
-                   } 
+                    emitBBox(cameraCode, { trackId, bbox, personId, similarity, eventTs, frameTs })
+                }
                 //    else {
                 //     store.dispatch(clearCameraBBoxes({cameraCode, trackId}))
                 //    }
 
                 break;
             case WS_EVENTS.CAMERA_STREAM_STARTED: {
-                const { cameraCode, streamStartTs} = message.payload;
+                const { cameraCode, streamStartTs } = message.payload;
                 store.dispatch(updateStreamStartTs({
                     code: cameraCode,
                     streamStartTs: streamStartTs,
                 }))
-             break;   
+                break;
             }
         }
     })
