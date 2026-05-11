@@ -1,7 +1,5 @@
 import React from "react";
 import type { ReportMode } from "../types";
-import { Button } from "@/components/ui/button";
-import { Download, FileSpreadsheet } from "lucide-react";
 
 interface ReportToolbarProps {
   mode: ReportMode;
@@ -32,18 +30,6 @@ export const ReportToolbar: React.FC<ReportToolbarProps> = ({ mode, onModeChange
             {m.charAt(0).toUpperCase() + m.slice(1)}
           </button>
         ))}
-      </div>
-
-      {/* RIGHT: Export Actions */}
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" className="hidden sm:flex">
-          <Download className="mr-2 h-4 w-4" />
-          Export CSV
-        </Button>
-        <Button variant="default" size="sm">
-          <FileSpreadsheet className="mr-2 h-4 w-4" />
-          Export XLSX
-        </Button>
       </div>
     </div>
   );

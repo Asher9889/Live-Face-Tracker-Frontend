@@ -26,7 +26,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
     onChange({ mode: presetMode });
   };
 
-  const { employees, isLoading, isError, isFetched } = useEmployeeSearchByName(employeeSearchQuery);
+  const { employees, isLoading, isError } = useEmployeeSearchByName(employeeSearchQuery);
 
 
   return (

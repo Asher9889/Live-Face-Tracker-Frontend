@@ -1,16 +1,17 @@
 import React from "react";
 import type { ReportMode, DailyReportRow, MonthlyReportRow } from "../types";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { convertIdToEmpId } from "@/utils";
 
 interface AttendanceReportTableProps {
   mode: ReportMode;
@@ -57,10 +58,11 @@ export const AttendanceReportTable: React.FC<AttendanceReportTableProps> = ({
         <Table>
           <TableHeader className="bg-secondary/30 sticky top-0 z-10 shadow-sm">
             <TableRow>
+              <TableHead className="w-14 text-center text-nowrap">S No.</TableHead>
               <TableHead className="w-12 text-center">
-                <Checkbox 
-                  checked={allSelected} 
-                  onCheckedChange={(c) => onSelectAll(c === true)} 
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={(c) => onSelectAll(c === true)}
                   aria-label="Select all"
                 />
               </TableHead>
@@ -68,9 +70,12 @@ export const AttendanceReportTable: React.FC<AttendanceReportTableProps> = ({
               {isDaily ? (
                 <>
                   <TableHead>Entry Time</TableHead>
+                  <TableHead>Last Seen</TableHead>
+                  <TableHead>Live</TableHead>
+
                   <TableHead>Exit Time</TableHead>
                   <TableHead>Work Hours</TableHead>
-                  <TableHead>Status</TableHead>
+                  {/* <TableHead>Status</TableHead> */}
                   <TableHead>Flags</TableHead>
                 </>
               ) : (
@@ -85,19 +90,22 @@ export const AttendanceReportTable: React.FC<AttendanceReportTableProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((row) => {
+            {data.map((row, index) => {
               const isSelected = selectedRowIds.includes(row.id);
-              
+
               return (
-                <TableRow 
-                  key={row.id} 
+                <TableRow
+                  key={row.id}
                   className={`cursor-pointer transition-colors hover:bg-secondary/20 ${isSelected ? "bg-primary/5" : ""}`}
                   onClick={() => onRowClick(row.employeeId)}
                 >
+                  <TableCell className="text-center text-sm font-medium text-muted-foreground">
+                    {index + 1}
+                  </TableCell>
                   <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
-                    <Checkbox 
-                      checked={isSelected} 
-                      onCheckedChange={() => onSelectRow(row.id)} 
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={() => onSelectRow(row.id)}
                       aria-label="Select row"
                     />
                   </TableCell>
@@ -109,18 +117,48 @@ export const AttendanceReportTable: React.FC<AttendanceReportTableProps> = ({
                       </Avatar>
                       <div className="flex flex-col">
                         <span className="text-sm font-medium">{row.name}</span>
-                        <span className="text-xs text-muted-foreground">{row.department} • {row.employeeId}</span>
+                        <span className="text-xs text-muted-foreground">{row.department} • {convertIdToEmpId(row.employeeId)}</span>
                       </div>
                     </div>
                   </TableCell>
-                  
+
                   {isDaily ? (
                     // DAILY / CUSTOM COLUMNS
                     <>
-                      <TableCell className="text-sm">{(row as DailyReportRow).entryTime || "--"}</TableCell>
-                      <TableCell className="text-sm">{(row as DailyReportRow).exitTime || "--"}</TableCell>
-                      <TableCell className="text-sm font-medium">{(row as DailyReportRow).workHours || "--"}</TableCell>
+                      <TableCell className="text-sm">{new Date((row as DailyReportRow).entryTime).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }).toUpperCase() || "--"}</TableCell>
+                      <TableCell className="text-sm">{new Date((row as DailyReportRow).lastSeenAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }).toUpperCase() || "--"}</TableCell>
                       <TableCell>
+                        {(() => {
+                          const currentStatus = (row as DailyReportRow).currentStatus;
+                          const isIn = currentStatus === "In";
+
+                          return (
+                            <div
+                              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium shadow-sm transition-all duration-200 ${isIn
+                                  ? "border-emerald-200 bg-emerald-50/90 text-emerald-700"
+                                  : "border-slate-200 bg-slate-50/90 text-slate-600"
+                                }`}
+                              title={`Currently ${currentStatus}`}
+                            >
+                              <span className="relative flex h-2.5 w-2.5">
+                                <span
+                                  className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-60 ${isIn ? "bg-emerald-500" : "bg-slate-400"
+                                    }`}
+                                />
+                                <span
+                                  className={`relative inline-flex h-2.5 w-2.5 rounded-full ${isIn ? "bg-emerald-500" : "bg-slate-400"
+                                    }`}
+                                />
+                              </span>
+                              {/* {isIn ? <LogIn className="h-3.5 w-3.5" /> : <LogOut className="h-3.5 w-3.5" />} */}
+                              <span className="sr-only">{currentStatus}</span>
+                            </div>
+                          );
+                        })()}
+                      </TableCell>
+                      <TableCell className="text-sm">{(row as DailyReportRow).exitTime ? new Date((row as DailyReportRow).exitTime).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }).toUpperCase() : "--"}</TableCell>
+                      <TableCell className="text-sm font-medium">{(row as DailyReportRow).workHours || "--"}</TableCell>
+                      {/* <TableCell>
                         {(() => {
                           const status = (row as DailyReportRow).status;
                           return (
@@ -129,7 +167,7 @@ export const AttendanceReportTable: React.FC<AttendanceReportTableProps> = ({
                             </Badge>
                           );
                         })()}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         <div className="flex gap-1">
                           {(row as DailyReportRow).lateStatus && <Badge variant="outline" className="text-orange-500 border-orange-200 bg-orange-50">Late</Badge>}

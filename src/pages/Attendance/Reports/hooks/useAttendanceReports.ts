@@ -1,10 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { ReportMode, ReportFiltersState, AnalyticsSummary, DailyReportRow, MonthlyReportRow } from "../types";
-import * as mockApi from "../services/mockReports";
+import { useQuery } from "@tanstack/react-query";
+import type { ReportMode, ReportFiltersState } from "../types";
+import { getReportsSummary, getReportsRows } from "../api/attendance-reports.api";
 
 export const useAttendanceReports = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(25);
 
   // Mode from URL, default to 'daily'
   const modeParam = searchParams.get("mode") as ReportMode | null;
@@ -16,11 +19,6 @@ export const useAttendanceReports = () => {
     month: searchParams.get("month") || new Date().toISOString().slice(0, 7),
     department: searchParams.get("department") || "all",
   });
-
-  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
-  const [reportData, setReportData] = useState<DailyReportRow[] | MonthlyReportRow[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Selected employee for Timeline Drawer
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
@@ -36,42 +34,53 @@ export const useAttendanceReports = () => {
     if (filters.month) newParams.set("month", filters.month);
     
     setSearchParams(newParams, { replace: true });
-  }, [filters.mode, filters.date, filters.month]);
+  }, [filters.mode, filters.date, filters.month, setSearchParams, searchParams]);
 
-  // Fetch data when filters change
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const [summary, data] = await Promise.all([
-        mockApi.getAnalyticsSummary(filters),
-        filters.mode === "daily" 
-          ? mockApi.getDailyReport(filters)
-          : filters.mode === "monthly"
-          ? mockApi.getMonthlyReport(filters)
-          : mockApi.getCustomRangeReport(filters)
-      ]);
-      setAnalytics(summary);
-      setReportData(data);
-      // Reset row selection when data changes
-      setSelectedRowIds([]);
-    } catch (err) {
-      setError("Failed to fetch report data. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [filters]);
+  // Fetch analytics summary
+  const {
+    data: analytics = null,
+    isLoading: isSummaryLoading,
+    error: summaryError,
+  } = useQuery({
+    queryKey: ["reportsSummary", filters],
+    queryFn: () => getReportsSummary(filters),
+    staleTime: 30 * 1000, // 30 seconds
+    retry: 2,
+  });
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // Fetch report rows
+  const {
+    data: rowsResponse,
+    isLoading: isRowsLoading,
+    error: rowsError,
+  } = useQuery({
+    queryKey: ["reportsRows", filters, page, pageSize],
+    queryFn: () => getReportsRows(filters, page, pageSize),
+    staleTime: 30 * 1000,
+    retry: 2,
+  });
+
+  const reportData = rowsResponse?.rows || [];
+  const pagination = rowsResponse?.pagination;
+  const isLoading = isSummaryLoading || isRowsLoading;
+  const error = summaryError || rowsError;
 
   const updateFilters = (newFilters: Partial<ReportFiltersState>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
+    // Reset to page 1 when filters change
+    setPage(1);
+    // Reset row selection
+    setSelectedRowIds([]);
   };
 
   const setMode = (mode: ReportMode) => {
     setFilters(prev => ({ ...prev, mode }));
+    setPage(1);
+    setSelectedRowIds([]);
+  };
+
+  const goToPage = (newPage: number) => {
+    setPage(newPage);
   };
 
   return {
@@ -82,11 +91,14 @@ export const useAttendanceReports = () => {
     analytics,
     reportData,
     isLoading,
-    error,
+    error: error ? "Failed to fetch report data. Please try again." : null,
     selectedEmployeeId,
     setSelectedEmployeeId,
     selectedRowIds,
     setSelectedRowIds,
-    refresh: fetchData
+    pagination,
+    page,
+    pageSize,
+    goToPage,
   };
 };

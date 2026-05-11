@@ -10,6 +10,7 @@ interface ExportActionBarProps {
   onClearSelection: () => void;
   onExportCsv: () => void;
   onExportXlsx: () => void;
+  isExporting?: boolean;
 }
 
 export const ExportActionBar: React.FC<ExportActionBarProps> = ({
@@ -18,7 +19,8 @@ export const ExportActionBar: React.FC<ExportActionBarProps> = ({
   mode,
   onClearSelection,
   onExportCsv,
-  onExportXlsx
+  onExportXlsx,
+  isExporting = false,
 }) => {
   // We only show it if there's data to export, and it becomes more prominent if items are selected.
   if (totalCount === 0) return null;
@@ -40,6 +42,7 @@ export const ExportActionBar: React.FC<ExportActionBarProps> = ({
             size="sm" 
             className="text-muted-foreground hover:text-foreground h-8 px-2"
             onClick={onClearSelection}
+            disabled={isExporting}
           >
             <X className="w-4 h-4 mr-1" />
             Clear Selection
@@ -48,13 +51,23 @@ export const ExportActionBar: React.FC<ExportActionBarProps> = ({
       </div>
 
       <div className="flex items-center gap-3">
-        <Button variant="outline" className="hidden sm:flex" onClick={onExportCsv}>
+        <Button 
+          variant="outline" 
+          className="hidden sm:flex" 
+          onClick={onExportCsv}
+          disabled={isExporting}
+        >
           <Download className="mr-2 h-4 w-4" />
-          Export CSV
+          {isExporting ? "Exporting..." : "Export CSV"}
         </Button>
-        <Button variant="default" className="shadow-md" onClick={onExportXlsx}>
+        <Button 
+          variant="default" 
+          className="shadow-md" 
+          onClick={onExportXlsx}
+          disabled={isExporting}
+        >
           <FileSpreadsheet className="mr-2 h-4 w-4" />
-          Export XLSX
+          {isExporting ? "Exporting..." : "Export XLSX"}
         </Button>
       </div>
     </div>

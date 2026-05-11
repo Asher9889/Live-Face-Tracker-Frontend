@@ -16,8 +16,10 @@ export interface DailyReportRow {
   name: string;
   avatar?: string;
   department: string;
-  entryTime: string | null;
-  exitTime: string | null;
+  entryTime: string;
+  lastSeenAt: string;
+  currentStatus: "In" | "Out";
+  exitTime: string;
   workHours: string | null;
   status: "Present" | "Absent" | "Late" | "Half Day";
   lateStatus: boolean;
@@ -40,10 +42,11 @@ export interface MonthlyReportRow {
 
 export interface TimelineEvent {
   id: string;
-  type: "ENTRY_DETECTED" | "EXIT_PENDING" | "EXIT_CANCELLED" | "EXIT_CONFIRMED" | "SYSTEM_RECOVERY";
+  type: "ENTRY" | "EXIT" | "SYSTEM";
+  eventName: string;
   timestamp: string;
   cameraSource?: string;
-  confidence?: number;
+  confidence?: number | null;
   statusBadge: "success" | "warning" | "error" | "info" | "default";
 }
 
