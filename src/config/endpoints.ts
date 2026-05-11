@@ -26,13 +26,19 @@ const endPoints = {
             url: '/employees/:employeeId',
             method: 'GET'
         },
-        registerFromUnknown : {
+        registerFromUnknown: {
             url: '/employees/promote',
             method: 'POST'
         },
-        unknownMerge : {
+        unknownMerge: {
             url: '/unknown/merge',
-            method: 'POST' 
+            method: 'POST'
+        },
+        searchEmployeeByName: (name: string) => {
+            return {
+                url: `/employees/search?name=${encodeURIComponent(name)}`,
+                method: 'GET'
+            }
         }
     },
 
@@ -53,7 +59,7 @@ const endPoints = {
             url: '/cameras',
             method: 'GET'
         },
-        update : (cameraId: string) => ({
+        update: (cameraId: string) => ({
             url: `/cameras/${cameraId}`,
             method: 'PUT'
         })
@@ -105,6 +111,7 @@ const endPoints = {
             method: 'POST'
         }
     },
+
     dashboard: {
         attendanceSummary: {
             url: '/dashboard/attendance-summary',

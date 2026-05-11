@@ -48,19 +48,19 @@ const ReportsWorkspace: React.FC = () => {
     <div className="h-full flex flex-col bg-background relative overflow-hidden">
       {/* Sticky Top Section */}
       <ReportToolbar mode={mode} onModeChange={setMode} />
-      
+
       {/* Scrollable Content Workspace */}
       <div className="flex-1 overflow-auto flex flex-col relative z-0">
         <ReportFilters filters={filters} onChange={updateFilters} />
-        
-        <SummaryCards 
-          analytics={analytics} 
-          isLoading={isLoading} 
-          mode={mode} 
+
+        <SummaryCards
+          analytics={analytics}
+          isLoading={isLoading}
+          mode={mode}
         />
-        
+
         {/* Main Table Area */}
-        <AttendanceReportTable 
+        <AttendanceReportTable
           mode={mode}
           data={reportData}
           isLoading={isLoading}
@@ -72,7 +72,7 @@ const ReportsWorkspace: React.FC = () => {
       </div>
 
       {/* Sticky Bottom Actions */}
-      <ExportActionBar 
+      <ExportActionBar
         mode={mode}
         selectedCount={selectedRowIds.length}
         totalCount={reportData.length}
@@ -82,9 +82,9 @@ const ReportsWorkspace: React.FC = () => {
       />
 
       {/* Contextual Drawer */}
-      <EmployeeTimelineDrawer 
-        employeeId={selectedEmployeeId} 
-        onClose={() => setSelectedEmployeeId(null)} 
+      <EmployeeTimelineDrawer
+        employeeId={selectedEmployeeId}
+        onClose={() => setSelectedEmployeeId(null)}
       />
     </div>
   );

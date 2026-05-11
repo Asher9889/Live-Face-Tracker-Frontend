@@ -1,17 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import type { ReportMode, ReportFiltersState } from "../types";
 import { DEPARTMENTS, STATUS_OPTIONS, REPORT_PRESETS } from "../constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, X } from "lucide-react";
+import useEmployeeSearchByName from "../hooks/useEmployeeSearchByName";
+import type { EmployeeSearchItem } from "../hooks/useEmployeeSearchByName";
+import { convertIdToEmpId } from "@/utils";
 
 interface ReportFiltersProps {
   filters: ReportFiltersState;
@@ -19,12 +16,18 @@ interface ReportFiltersProps {
 }
 
 export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange }) => {
+  const [employeeSearchQuery, setEmployeeSearchQuery] = useState<string>(filters.employeeName || "");
+  const [showSuggestions, setShowSuggestions] = useState(false); // name suggestions dropdown visibility
+
   const mode = filters.mode;
 
   const handlePresetClick = (_presetValue: string, presetMode: ReportMode) => {
     // Basic mapping for demo purposes. In real app, calculate dates based on preset.
     onChange({ mode: presetMode });
   };
+
+  const { employees, isLoading, isError, isFetched } = useEmployeeSearchByName(employeeSearchQuery);
+
 
   return (
     <div className="flex flex-col gap-4 p-4 border-b border-border/40 bg-background/50">
@@ -55,9 +58,59 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
           <Input 
             placeholder="Search employee..." 
             className="pl-9 h-9 bg-background"
-            value={filters.employeeId || ""}
-            onChange={(e) => onChange({ employeeId: e.target.value })}
-          />
+            value={employeeSearchQuery}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => {
+              window.setTimeout(() => setShowSuggestions(false), 120);
+            }}
+            onChange={(e) => {
+              const value = e.target.value;
+              setEmployeeSearchQuery(value);
+              onChange({ employeeName: value, employeeId: undefined });
+            }}
+          /> 
+ 
+          {showSuggestions && employeeSearchQuery.length >= 1 && (
+            <div className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-md border border-border bg-background shadow-md">
+              {isLoading && employees.length === 0 && (
+                <div className="px-3 py-2 text-xs text-muted-foreground">Searching...</div>
+              )}
+
+              {!isLoading && isError && (
+                <div className="px-3 py-2 text-xs text-destructive">Unable to fetch employees</div>
+              )}
+
+              {!isLoading && !isError && employees.length === 0 && (
+                <div className="px-3 py-2 text-xs text-muted-foreground">No employees found</div>
+              )} 
+
+              { !isLoading && !isError && employees.length > 0 && employees.map((employee: EmployeeSearchItem) => (
+                <button
+                  key={employee.id}
+                  type="button"
+                  className="block w-full px-3 py-2 text-left hover:bg-accent border-b border-border last:border-0 cursor-pointer"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    setEmployeeSearchQuery(employee.name);
+                    onChange({ employeeName: employee.name, employeeId: employee.id });
+                    setShowSuggestions(false);
+                  }}
+                >
+                  <p className="text-sm font-medium text-foreground">{employee.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {/* { employee.id} */}
+                    {employee.department ? ` • ${employee.department}` : ""}
+                    {employee.role ? ` • ${employee.role}` : ""}
+                    {convertIdToEmpId(employee.id) ? ` • ${convertIdToEmpId(employee.id)}` : ""}
+                  </p>
+                </button> 
+              ))}
+
+
+            </div>
+          )}
+
+          
         </div>
 
         {/* Common: Department Select */}

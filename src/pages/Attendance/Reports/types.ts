@@ -72,6 +72,7 @@ export interface ReportFiltersState {
   endDate?: string;
   department?: string;
   employeeId?: string;
+  employeeName?: string;
   status?: string;
   lateOnly?: boolean;
   missingExitOnly?: boolean;

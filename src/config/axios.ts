@@ -14,37 +14,46 @@ api.interceptors.response.use(
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
 
+
+
+    // Network/server unreachable
     if (!error.response) {
-      return Promise.reject(error);
+      return Promise.reject( new Error("Server is not responding"));
     }
 
-    if (error.response.status !== 401) {
-      return Promise.reject(error);
+    // Handle auth refresh only
+    if (error.response.status === 401) {
+
+      const originalRequest = error.config;
+
+      if (!originalRequest) {
+        return Promise.reject(error);
+      }
+
+      if (originalRequest._retry) {
+        return Promise.reject(error);
+      }
+
+      if (originalRequest.url?.includes("/auth/login") || originalRequest.url?.includes("/auth/refresh")) {
+        return Promise.reject(error);
+      }
+
+      try {
+        originalRequest._retry = true;
+        await api.post("/auth/refresh");
+        return api(originalRequest);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
+
+      
     }
 
-    const originalRequest = error.config;
+    // Normalize all other errors
+      const responseData = error.response.data as { message?: string } | undefined;
+      const message: string = responseData?.message || "Something went wrong";
 
-    if (!originalRequest) {
-      return Promise.reject(error);
-    }
-
-    if (originalRequest._retry) {
-      return Promise.reject(error);
-    }
-
-    // Do NOT retry auth endpoints
-    if (originalRequest.url?.includes("/auth/login") || originalRequest.url?.includes("/auth/refresh")) {
-      return Promise.reject(error);
-    }
-
-    try {
-      originalRequest._retry = true;
-      await api.post("/auth/refresh");
-      return api(originalRequest);
-    } catch (refreshError) {
-      // Refresh failed → session invalid
-      return Promise.reject(refreshError);
-    }
+    return Promise.reject(new Error(message));
   }
 )
 
