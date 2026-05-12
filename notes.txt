@@ -1,0 +1,58 @@
+# payload
+
+{
+    "mode": "daily",
+    "date": "2026-05-12",
+    "month": "2026-05",
+    "scope": "ALL_ROWS",
+    "filters": {
+        "department": "admin"
+    },
+    "format": "csv",
+    "timezone": "Asia/Kolkata",
+    "registeredOnly": true
+}
+{
+    "mode": "daily",
+    "date": "2026-05-12",
+    "month": "2026-05",
+    "scope": "SELECTED_ROWS",
+    "rowIds": [
+        "daily_2026-05-12_69eb41a6e3da7bc3745c34a9"
+    ],
+    "filters": {
+        "department": "admin"
+    },
+    "format": "csv",
+    "timezone": "Asia/Kolkata",
+    "registeredOnly": true
+}
+
+{
+    "mode": "daily",
+    "date": "2026-05-12",
+    "month": "2026-05",
+    "scope": "SELECTED_ROWS",
+    "rowIds": [
+        "daily_2026-05-12_69ec59eea047aa9eff3065fa",
+        "daily_2026-05-12_69eb4143e3da7bc3745c34a0",
+        "daily_2026-05-12_69feb64ac0d02e78f14fdb3e"
+    ],
+    "filters": {},
+    "format": "csv",
+    "timezone": "Asia/Kolkata",
+    "registeredOnly": true
+}
+
+{
+    "mode": "daily",
+    "date": "2026-05-12",
+    "month": "2026-05",
+    "scope": "ALL_ROWS",
+    "filters": {
+        "department": "engineering"
+    },
+    "format": "csv",
+    "timezone": "Asia/Kolkata",
+    "registeredOnly": true
+}
