@@ -1,11 +1,5 @@
 export const DEPARTMENTS = [
-  "Engineering",
-  "Product",
-  "Design",
-  "Marketing",
-  "Sales",
-  "HR",
-  "Operations",
+  "Engineering", "HR", "Marketing", "Sales", "Admin", "Operations"
 ];
 
 export const STATUS_OPTIONS = [

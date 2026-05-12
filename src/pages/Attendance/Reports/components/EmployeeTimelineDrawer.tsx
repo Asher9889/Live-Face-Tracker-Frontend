@@ -15,19 +15,21 @@ import { convertIdToEmpId } from "@/utils";
 
 interface EmployeeTimelineDrawerProps {
   employeeId: string | null;
+  date?: string | null;
   onClose: () => void;
 }
 
-export const EmployeeTimelineDrawer: React.FC<EmployeeTimelineDrawerProps> = ({ employeeId, onClose }) => {
+export const EmployeeTimelineDrawer: React.FC<EmployeeTimelineDrawerProps> = ({ employeeId, date, onClose }) => {
   const today = format(new Date(), 'yyyy-MM-dd');
+  const queryDate = date || today;
 
   const { 
     data: timelineData, 
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["employeeTimeline", employeeId, today],
-    queryFn: () => employeeId ? getEmployeeTimeline(employeeId, today) : Promise.reject("No employee ID"),
+    queryKey: ["employeeTimeline", employeeId, queryDate],
+    queryFn: () => employeeId ? getEmployeeTimeline(employeeId, queryDate) : Promise.reject("No employee ID"),
     enabled: !!employeeId,
     staleTime: 30 * 1000,
     retry: 1,
@@ -98,7 +100,7 @@ export const EmployeeTimelineDrawer: React.FC<EmployeeTimelineDrawerProps> = ({ 
         ) : timelineData ? (
           <div className="flex flex-col flex-1">
             {/* Employee Profile Header */}
-            <div className="flex items-center gap-4 p-6 bg-secondary/20">
+            <div className="flex items-center gap-4 px-6 py-2 bg-secondary/20">
               <Avatar className="h-16 w-16 border-2 border-background shadow-sm">
                 <AvatarImage src={timelineData.employee.avatar || undefined} alt={timelineData.employee.name} />
                 <AvatarFallback>{timelineData.employee.name.charAt(0)}</AvatarFallback>

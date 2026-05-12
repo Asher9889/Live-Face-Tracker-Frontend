@@ -28,7 +28,7 @@ const useEmployeeSearchByName = (searchTerm: string) => {
     const { data: employees = [], isLoading, isError, isFetched } = useQuery({
         queryKey: ['employeeSearch', query],
         queryFn: () => fetchEmployeeNames(query),
-        enabled: query.length >= 1,
+        enabled: query.length >= 2,
         staleTime: 60 * 1000,
     });
 

@@ -136,6 +136,7 @@ const ReportsWorkspace: React.FC = () => {
       {/* Contextual Drawer */}
       <EmployeeTimelineDrawer
         employeeId={selectedEmployeeId}
+        date={filters.date}
         onClose={() => setSelectedEmployeeId(null)}
       />
     </div>

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { ReportMode, ReportFiltersState } from "../types";
-import { DEPARTMENTS, STATUS_OPTIONS, REPORT_PRESETS } from "../constants";
+import { DEPARTMENTS, REPORT_PRESETS } from "../constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,10 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
   const [showSuggestions, setShowSuggestions] = useState(false); // name suggestions dropdown visibility
 
   const mode = filters.mode;
+
+  useEffect(() => {
+    setEmployeeSearchQuery(filters.employeeName || "");
+  }, [filters.employeeName]);
 
   const handlePresetClick = (_presetValue: string, presetMode: ReportMode) => {
     // Basic mapping for demo purposes. In real app, calculate dates based on preset.
@@ -66,13 +70,13 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
             onChange={(e) => {
               const value = e.target.value;
               setEmployeeSearchQuery(value);
-              onChange({ employeeName: value, employeeId: undefined });
+              setShowSuggestions(value.length >= 2);
             }}
           /> 
  
-          {showSuggestions && employeeSearchQuery.length >= 1 && (
+          {showSuggestions && employeeSearchQuery.length >= 2 && (
             <div className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-md border border-border bg-background shadow-md">
-              {isLoading && employees.length === 0 && (
+              {isLoading && ((()=>{console.log("Searching...")})())  && (
                 <div className="px-3 py-2 text-xs text-muted-foreground">Searching...</div>
               )}
 
@@ -95,6 +99,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
                     onChange({ employeeName: employee.name, employeeId: employee.id });
                     setShowSuggestions(false);
                   }}
+
                 >
                   <p className="text-sm font-medium text-foreground">{employee.name}</p>
                   <p className="text-xs text-muted-foreground">
@@ -116,7 +121,9 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
         {/* Common: Department Select */}
         <Select 
           value={filters.department} 
-          onValueChange={(val) => onChange({ department: val })}
+          onValueChange={(val) => {
+            onChange({ department: val.toLocaleLowerCase(), employeeId: undefined, employeeName: "" });
+          }}
         >
           <SelectTrigger className="w-[160px] h-9 bg-background">
             <SelectValue placeholder="Department" />
@@ -124,7 +131,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
           <SelectContent>
             <SelectItem value="all">All Departments</SelectItem>
             {DEPARTMENTS.map(d => (
-              <SelectItem key={d} value={d}>{d}</SelectItem>
+              <SelectItem key={d} value={d.toLocaleLowerCase()}>{d}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -140,7 +147,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
                 onChange={(e) => onChange({ date: e.target.value })}
               />
             </div>
-            <Select 
+            {/* <Select 
               value={filters.status || "all"} 
               onValueChange={(val) => onChange({ status: val === "all" ? undefined : val })}
             >
@@ -153,8 +160,8 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
                   <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                 ))}
               </SelectContent>
-            </Select>
-            <Button 
+            </Select> */}
+            {/* <Button 
               variant={filters.lateOnly ? "default" : "outline"} 
               size="sm" 
               className="h-9"
@@ -169,7 +176,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
               onClick={() => onChange({ missingExitOnly: !filters.missingExitOnly })}
             >
               Missing Exit
-            </Button>
+            </Button> */}
           </>
         )}
 
@@ -207,13 +214,14 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({ filters, onChange 
         )}
 
         {/* Reset Filters */}
-        {(filters.employeeId || filters.department !== "all" || filters.lateOnly || filters.missingExitOnly || filters.status) && (
+        {(filters.employeeId || filters.employeeName || filters.department !== "all" || filters.lateOnly || filters.missingExitOnly || filters.status) && (
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-9 text-muted-foreground hover:text-foreground ml-auto"
+            className="h-9 text-muted-foreground text-black border   hover:text-foreground ml-auto"
             onClick={() => onChange({
-              employeeId: "",
+              employeeId: undefined,
+              employeeName: undefined,
               department: "all",
               status: undefined,
               lateOnly: false,
