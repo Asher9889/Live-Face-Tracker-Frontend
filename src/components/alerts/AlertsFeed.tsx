@@ -6,6 +6,8 @@ import { cn } from '@/utils/cn';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { markSoundPlayed, removeNotification } from '@/store/slices/uiEventNotificationSlice';
 import { useNotificationSound } from '@/hooks/useNotificationSound';
+import { TfiLocationPin } from "react-icons/tfi";
+
 
 const AlertsFeed = () => {
   const dispatch = useAppDispatch();
@@ -23,18 +25,18 @@ const AlertsFeed = () => {
   }, [notifications, playSound, dispatch]);
 
   // Auto-remove notifications after 8 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = Date.now();
-      notifications.forEach((notification) => {
-        if (now - notification.createdAt > 15000) { // 15 seconds
-          dispatch(removeNotification(notification.id));
-        }
-      });
-    }, 1000);
+//   useEffect(() => {
+//     const timer = setInterval(() => {
+//       const now = Date.now();
+//       notifications.forEach((notification) => {
+//         if (now - notification.createdAt > 15000) { // 15 seconds
+//           dispatch(removeNotification(notification.id));
+//         }
+//       });
+//     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [notifications, dispatch]);
+//     return () => clearInterval(timer);
+//   }, [notifications, dispatch]);
 
   const getEventIcon = (noteKey: string) => {
     switch (noteKey) {
@@ -165,7 +167,7 @@ const AlertsFeed = () => {
                     <div className="space-y-1 pt-2">
                       <p className="text-sm">{notification.note}</p>
                       <p className="text-xs text-muted-foreground">
-                        📍 {notification.cameraName} ({notification.cameraCode})
+                        <TfiLocationPin className="inline-block mr-1 text-green-500 " /> {notification.cameraName} ({notification.cameraCode})
                       </p>
                     </div>
                   </div>

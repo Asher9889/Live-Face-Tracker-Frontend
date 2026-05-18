@@ -1,4 +1,5 @@
-import { Bell, Menu, User } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
+import NotificationBell from '@/components/alerts/NotificationBell';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar } from '@/store/slices/uiSlice';
 import { cn } from '@/utils/cn';
@@ -27,10 +28,11 @@ const Navbar = () => {
 
             <div className="flex items-center gap-4">
                 <ModeToggle />
-                <button className="p-2 hover:bg-accent rounded-full relative">
-                    <Bell className="h-5 w-5" />
-                    <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-destructive rounded-full animate-pulse" />
-                </button>
+                {/* Notification bell with popover */}
+                <div>
+                    {/* NotificationBell handles its own popover */}
+                    <NotificationBell />
+                </div>
                 <div className="flex items-center gap-2 pl-4 border-l">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                         <User className="h-5 w-5 text-primary" />
