@@ -41,17 +41,20 @@ const ReportsWorkspace: React.FC = () => {
   };
 
   const handleExport = async (format: 'csv' | 'xlsx') => {
+    // Validate custom range before exporting
+    if (mode === 'custom' && (!filters.startDate || !filters.endDate)) {
+      toast.error('Please select both start and end dates for custom range');
+      return;
+    }
+
     const count = selectedRowIds.length > 0 ? selectedRowIds.length : reportData.length;
     
     try {
       setIsExporting(true);
       
-      const exportPayload = {
+      // Build payload so date/month are only sent for daily/monthly modes
+      const basePayload: any = {
         mode: filters.mode,
-        date: filters.date,
-        month: filters.month,
-        startDate: filters.startDate,
-        endDate: filters.endDate,
         scope: selectedRowIds.length > 0 ? ("SELECTED_ROWS" as const) : ("ALL_ROWS" as const),
         rowIds: selectedRowIds.length > 0 ? selectedRowIds : undefined,
         filters: {
@@ -66,6 +69,17 @@ const ReportsWorkspace: React.FC = () => {
         timezone: "Asia/Kolkata",
         registeredOnly: true,
       };
+
+      if (filters.mode === "daily") {
+        basePayload.date = filters.date;
+      } else if (filters.mode === "monthly") {
+        basePayload.month = filters.month;
+      } else if (filters.mode === "custom") {
+        basePayload.startDate = filters.startDate;
+        basePayload.endDate = filters.endDate;
+      }
+
+      const exportPayload = basePayload;
 
       const blob = await exportReports(exportPayload);
 

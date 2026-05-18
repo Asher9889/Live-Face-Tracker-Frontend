@@ -68,6 +68,8 @@ export const useAttendanceReports = () => {
   } = useQuery({
     queryKey: ["reportsSummary", filters],
     queryFn: () => getReportsSummary(filters),
+    // Only run for custom mode when both dates are provided
+    enabled: filters.mode !== "custom" || (!!filters.startDate && !!filters.endDate),
     staleTime: 30 * 1000, // 30 seconds
     retry: 2,
   });
@@ -80,6 +82,8 @@ export const useAttendanceReports = () => {
   } = useQuery({
     queryKey: ["reportsRows", filters, page, pageSize],
     queryFn: () => getReportsRows(filters, page, pageSize),
+    // Only run for custom mode when both dates are provided
+    enabled: filters.mode !== "custom" || (!!filters.startDate && !!filters.endDate),
     staleTime: 30 * 1000,
     retry: 2,
   });
@@ -87,7 +91,12 @@ export const useAttendanceReports = () => {
   const reportData = rowsResponse?.rows || [];
   const pagination = rowsResponse?.pagination;
   const isLoading = isSummaryLoading || isRowsLoading;
-  const error = summaryError || rowsError;
+  let error: string | null = null;
+  if (filters.mode === "custom" && (!filters.startDate || !filters.endDate)) {
+    error = "Please select both start and end dates for custom range.";
+  } else if (summaryError || rowsError) {
+    error = "Failed to fetch report data. Please try again.";
+  }
 
   const updateFilters = (newFilters: Partial<ReportFiltersState>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
