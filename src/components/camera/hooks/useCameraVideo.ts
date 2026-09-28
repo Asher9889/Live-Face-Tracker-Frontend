@@ -18,6 +18,9 @@ export function useCameraVideo(
 ) {
     useEffect(() => {
         if (!room) return;
+        // The element must already be mounted when this runs. Ref objects are
+        // stable, so a null here would not re-trigger the effect and the track
+        // would silently never attach.
         const el = videoRef.current;
         if (!el) return;
 
