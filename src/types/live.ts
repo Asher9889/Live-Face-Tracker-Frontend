@@ -21,6 +21,8 @@ interface IFrameTrack {
     state: TTrackState | null;
     /** Employee id, synthetic unknown id, or null while still pending. */
     label: string | null;
+    /** Human-readable name for the overlay. Falls back to label when absent. */
+    label_name?: string | null;
     label_confidence: number;
     /** null until automatic re-verification lands. */
     label_expires_at: number | null;

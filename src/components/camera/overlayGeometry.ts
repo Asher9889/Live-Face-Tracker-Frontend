@@ -29,6 +29,9 @@ export function isPending(state: TTrackState | null): boolean {
 }
 
 export function displayLabel(track: IFrameTrack): string {
+    // The overlay shows names only. label is the employee/unknown id and stays
+    // in the payload for events and debugging.
+    if (track.label_name) return track.label_name;
     if (track.label) return track.label;
     if (track.state === "COLLECTING_KNOWN") return "identifying…";
     if (track.state === "COLLECTING_UNKNOWN" || track.state === "COLLECTING_FRAME") {
