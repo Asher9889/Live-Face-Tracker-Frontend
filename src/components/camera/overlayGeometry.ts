@@ -8,6 +8,16 @@ import type { IFrameState, IFrameTrack, TTrackState } from "@/types/live";
  */
 export const OVERLAY_DELAY_MS = 120;
 
+/**
+ * A state older than this is treated as no data at all.
+ *
+ * Without an upper bound a state that has stopped being replaced still satisfies
+ * "at least OVERLAY_DELAY_MS old" forever, so a stalled feed leaves the last
+ * boxes drawn for good — a person who walked away stays on screen. Anything
+ * beyond this is a broken feed, not a slow one, so we clear instead.
+ */
+export const OVERLAY_STALE_MS = 1000;
+
 export const LABEL_FONT_PX = 13;
 
 export type TTrackColor = { stroke: string; text: string };
@@ -40,15 +50,17 @@ export function displayLabel(track: IFrameTrack): string {
     return `track ${track.track_id}`;
 }
 
-/** Newest buffered state that is at least OVERLAY_DELAY_MS old. */
+/** Newest buffered state that is old enough to be on screen but not stale. */
 export function pickRenderable(buffer: IFrameState[], now = Date.now()): IFrameState | null {
-    const cutoff = now - OVERLAY_DELAY_MS;
+    const readyBy = now - OVERLAY_DELAY_MS;
+    const expiresAfter = now - OVERLAY_STALE_MS;
     let chosen: IFrameState | null = null;
     for (const state of buffer) {
-        if (state.frameTs <= cutoff) chosen = state;
+        if (state.frameTs <= readyBy) chosen = state;
         else break; // buffer is ordered, so nothing later qualifies
     }
-    return chosen;
+    // The newest eligible state is the last one, since the buffer is ordered.
+    return chosen && chosen.frameTs >= expiresAfter ? chosen : null;
 }
 
 /**

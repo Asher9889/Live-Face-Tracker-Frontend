@@ -43,6 +43,17 @@ export function useFrameState(cameraCode: string) {
 
         if (!room) return;
 
+        // A new session must not inherit the previous session's high-water mark.
+        // The AI numbers frames per process, but the buffer is also cleared on a
+        // reconnect so that any numbering discontinuity — publisher restart,
+        // counter reset, failover to another instance — is absorbed here rather
+        // than silently discarding every message as a duplicate.
+        const reset = () => {
+            bufferRef.current = [];
+            lastPushRef.current = 0;
+            setLatest(null);
+        };
+
         const onData = (
             payload: Uint8Array,
             _participant: unknown,
@@ -78,8 +89,14 @@ export function useFrameState(cameraCode: string) {
         };
 
         room.on(RoomEvent.DataReceived, onData);
+        room.on(RoomEvent.Connected, reset);
+        room.on(RoomEvent.Reconnected, reset);
+        room.on(RoomEvent.Disconnected, reset);
         return () => {
             room.off(RoomEvent.DataReceived, onData);
+            room.off(RoomEvent.Connected, reset);
+            room.off(RoomEvent.Reconnected, reset);
+            room.off(RoomEvent.Disconnected, reset);
         };
     }, [room, cameraCode]);
 
