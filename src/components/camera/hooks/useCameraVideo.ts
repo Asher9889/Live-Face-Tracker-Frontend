@@ -1,47 +1,59 @@
 import { useEffect } from "react";
-import { RoomEvent, Track } from "livekit-client";
+import { Room, RoomEvent, Track, RemoteTrack, RemoteTrackPublication } from "livekit-client";
 
-export function useCameraVideo(room: any, videoRef: React.RefObject<HTMLVideoElement | null>) {
-  useEffect(() => {
-    if (!room || !videoRef.current) return;
+const isCameraVideo = (pub: RemoteTrackPublication): boolean =>
+    pub.kind === Track.Kind.Video &&
+    pub.source !== Track.Source.ScreenShare &&
+    pub.source !== Track.Source.ScreenShareAudio;
 
-    const el = videoRef.current;
+/**
+ * Attaches the camera's remote video track to a <video> element.
+ *
+ * The room is shared across the grid, so the track may already be subscribed
+ * when this mounts — the subscribe event would then never fire for it.
+ */
+export function useCameraVideo(
+    room: Room | null,
+    videoRef: React.RefObject<HTMLVideoElement | null>
+) {
+    useEffect(() => {
+        if (!room) return;
+        const el = videoRef.current;
+        if (!el) return;
 
-    // Helper to get all video tracks from remote participants
-    const getRemoteVideoTracks = () => {
-      const tracks: any[] = [];
-      room.remoteParticipants.forEach((p: any) => {
-        p.trackPublications.forEach((pub: any) => {
-          if (pub.kind === Track.Kind.Video && pub.track) {
-            tracks.push(pub);
-          }
-        });
-      });
-      return tracks;
-    };
+        const publications = (): RemoteTrackPublication[] => {
+            const found: RemoteTrackPublication[] = [];
+            room.remoteParticipants.forEach((participant) => {
+                participant.videoTrackPublications.forEach((pub) => {
+                    if (isCameraVideo(pub)) found.push(pub);
+                });
+            });
+            return found;
+        };
 
-    // 1️⃣ Handle existing tracks (Room is persistent/singleton)
-    getRemoteVideoTracks().forEach((pub: any) => {
-      if (pub.isSubscribed) {
-        pub.track.attach(el);
-      }
-    });
+        const attachExisting = () => {
+            publications().forEach((pub) => {
+                if (pub.isSubscribed && pub.track) pub.track.attach(el);
+            });
+        };
 
-    // 2️⃣ Handle NEW tracks (fresh connection)
-    const onTrackSubscribed = (track: Track) => {
-      if (track.kind === Track.Kind.Video) {
-        track.attach(el);
-      }
-    };
+        attachExisting();
 
-    room.on(RoomEvent.TrackSubscribed, onTrackSubscribed);
+        const onSubscribed = (track: RemoteTrack, pub: RemoteTrackPublication) => {
+            if (isCameraVideo(pub)) track.attach(el);
+        };
 
-    return () => {
-      room.off(RoomEvent.TrackSubscribed, onTrackSubscribed);
-      // Clean detach on unmount
-      getRemoteVideoTracks().forEach((pub: any) => {
-        pub.track?.detach(el);
-      });
-    };
-  }, [room, videoRef]);
+        // A re-subscribe after an adaptive-stream or network change re-emits
+        // the track, so re-run the attach rather than trusting the first event.
+        const onUnsubscribed = () => attachExisting();
+
+        room.on(RoomEvent.TrackSubscribed, onSubscribed);
+        room.on(RoomEvent.TrackUnsubscribed, onUnsubscribed);
+
+        return () => {
+            room.off(RoomEvent.TrackSubscribed, onSubscribed);
+            room.off(RoomEvent.TrackUnsubscribed, onUnsubscribed);
+            publications().forEach((pub) => pub.track?.detach(el));
+        };
+    }, [room, videoRef]);
 }

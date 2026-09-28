@@ -42,6 +42,17 @@ const endPoints = {
         }
     },
 
+    live: {
+        cameras: {
+            url: '/live/cameras',
+            method: 'GET'
+        },
+        token: {
+            url: '/live/cameras/:cameraCode/token',
+            method: 'GET'
+        }
+    },
+
     camera: {
         token: {
             url: '/cameras/:cameraCode/token',

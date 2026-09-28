@@ -1,78 +1,114 @@
 import { useEffect, useRef } from "react";
+import type { IFrameState } from "@/types/live";
+import {
+    LABEL_FONT_PX,
+    colorFor,
+    displayLabel,
+    fitToVideo,
+    isPending,
+    pickRenderable,
+} from "./overlayGeometry";
 
 interface CameraOverlayProps {
-  cameraCode: string;
+  /** Recent frame states, oldest first. Read on every animation frame. */
+  bufferRef: React.RefObject<IFrameState[]>;
   videoRef?: React.RefObject<HTMLVideoElement | null>;
-  bboxRef?: React.RefObject<any | null>;
 }
 
-const CameraOverlay = ({ videoRef, bboxRef }: CameraOverlayProps) => {
+const CameraOverlay = ({ bufferRef, videoRef }: CameraOverlayProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const video = videoRef?.current;
-    if (!canvas || !video) return;
+    if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let rafId: number;
+    let rafId = 0;
 
     const draw = () => {
-      // wait for video metadata
-      if (video.videoWidth === 0 || video.videoHeight === 0) {
-        rafId = requestAnimationFrame(draw);
-        return;
-      }
+      const video = videoRef?.current;
 
-      // sync canvas size
-      if (
-        canvas.width !== video.videoWidth ||
-        canvas.height !== video.videoHeight
-      ) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+      // Match the canvas to what is actually painted, in device pixels.
+      const dpr = window.devicePixelRatio || 1;
+      const targetW = Math.max(1, Math.round(canvas.clientWidth * dpr));
+      const targetH = Math.max(1, Math.round(canvas.clientHeight * dpr));
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const data = bboxRef?.current;
-      const now = Date.now();
+      const state = pickRenderable(bufferRef.current ?? []);
 
-      if (data?.bbox && data.visibleAfter <= now) {
-        const { x, y, width, height } = data.bbox;
-
-        const px = (x / 100) * canvas.width;
-        const py = (y / 100) * canvas.height;
-        const pw = (width / 100) * canvas.width;
-        const ph = (height / 100) * canvas.height;
-
-        ctx.strokeStyle = "lime";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(px, py, pw, ph);
-
-        ctx.font = "14px Arial";
-        ctx.fillStyle = "lime";
-        ctx.fillText(
-          `ID ${data.trackId}`,
-          px,
-          Math.max(py - 6, 12)
+      if (state && video && video.videoWidth > 0) {
+        // Boxes are in published-frame pixels. adaptiveStream may hand us a
+        // smaller decode than the source, so scale by the real video size.
+        const { dispW, dispH, offX, offY } = fitToVideo(
+          canvas.width,
+          canvas.height,
+          video.videoWidth / video.videoHeight
         );
+
+        const scaleX = dispW / state.frame_width;
+        const scaleY = dispH / state.frame_height;
+
+        const fontPx = LABEL_FONT_PX * dpr;
+        ctx.font = `600 ${fontPx}px ui-sans-serif, system-ui, sans-serif`;
+        ctx.textBaseline = "bottom";
+        ctx.lineJoin = "round";
+
+        for (const track of state.tracks) {
+          const [x1, y1, x2, y2] = track.bbox;
+          const px = offX + x1 * scaleX;
+          const py = offY + y1 * scaleY;
+          const pw = (x2 - x1) * scaleX;
+          const ph = (y2 - y1) * scaleY;
+
+          if (pw <= 0 || ph <= 0) continue;
+
+          const { stroke, text: textColor } = colorFor(track.state, track.label);
+
+          ctx.strokeStyle = stroke;
+          ctx.lineWidth = 2 * dpr;
+          ctx.strokeRect(px, py, pw, ph);
+
+          // Pending identities are drawn dashed: "we are still working on it".
+          if (isPending(track.state)) {
+            ctx.setLineDash([6 * dpr, 4 * dpr]);
+            ctx.strokeRect(px, py, pw, ph);
+            ctx.setLineDash([]);
+          }
+
+          const label = displayLabel(track);
+          const textW = ctx.measureText(label).width;
+          const padX = 5 * dpr;
+          const boxH = fontPx + 6 * dpr;
+          let labelY = py - 4 * dpr;
+          if (labelY - boxH < 0) labelY = py + boxH; // no room above → inside
+
+          ctx.fillStyle = "rgba(2, 6, 23, 0.78)";
+          ctx.fillRect(px, labelY - boxH, textW + padX * 2, boxH);
+
+          ctx.fillStyle = textColor;
+          ctx.fillText(label, px + padX, labelY - 3 * dpr);
+        }
       }
 
       rafId = requestAnimationFrame(draw);
     };
 
-    draw(); // 🔥 ALWAYS start loop
+    rafId = requestAnimationFrame(draw);
 
     return () => cancelAnimationFrame(rafId);
-  }, [videoRef, bboxRef]);
+  }, [bufferRef, videoRef]);
 
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 pointer-events-none z-10"
+      className="pointer-events-none absolute inset-0 z-10 h-full w-full"
     />
   );
 };
