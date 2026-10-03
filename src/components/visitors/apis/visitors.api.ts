@@ -101,3 +101,20 @@ export async function getVisitorData():Promise<VisitorDTO[]> {
         }
     }
 }
+
+export async function deleteVisitor(visitorId: string): Promise<void> {
+    try {
+        await api.request({
+            url: endPoints.unknown.deleteVisitor.url.replace(":id", visitorId),
+            method: endPoints.unknown.deleteVisitor.method
+        })
+    } catch (error: any) {
+        if (error.response) {
+            throw new Error(error.response.data.message || "Server Error");
+        } else if (error.request) {
+            throw new Error("No response received from the server. Please check your network connection.");
+        } else {
+            throw new Error(error.message);
+        }
+    }
+}

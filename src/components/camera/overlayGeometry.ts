@@ -44,9 +44,11 @@ export function displayLabel(track: IFrameTrack): string {
     if (track.label_name) return track.label_name;
     if (track.label) return track.label;
     if (track.state === "COLLECTING_KNOWN") return "identifying…";
-    if (track.state === "COLLECTING_UNKNOWN" || track.state === "COLLECTING_FRAME") {
-        return "unidentified";
+    if (track.state === "COLLECTING_UNKNOWN") {
+        const n = track.buffer_size ?? 0;
+        return n > 0 ? `registering… (${n}/5)` : "registering…";
     }
+    if (track.state === "COLLECTING_FRAME") return "unidentified";
     return `track ${track.track_id}`;
 }
 

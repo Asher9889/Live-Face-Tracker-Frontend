@@ -26,6 +26,8 @@ interface IFrameTrack {
     label_confidence: number;
     /** null until automatic re-verification lands. */
     label_expires_at: number | null;
+    /** For COLLECTING_UNKNOWN: number of frames collected so far. */
+    buffer_size?: number;
 }
 
 interface IFrameState {

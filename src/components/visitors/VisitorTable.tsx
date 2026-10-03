@@ -9,12 +9,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, CheckCircle, ScanFace, Sparkles } from "lucide-react";
+import { UserPlus, CheckCircle, ScanFace, Sparkles, Trash2 } from "lucide-react";
 import useVisitorDetails from "./hooks/useVisitorDetails";
 import VisitorRowSkeleton from "./VisitorTableSkeleton";
 import { ImagePreviewDialog } from "../common";
 import VisitorDialogInfo from "./VisitorDialogInfo";
 import type { VisitorDTO } from "./types/visitors.types";
+import { useDeleteVisitor } from "./hooks/useDeleteVisitor";
 
 const EXPECTED_POSES = [
     "frontal",
@@ -118,6 +119,7 @@ interface VisitorTableProps {
 const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, onConvertToUser }: VisitorTableProps) => {
     const { data, isLoading } = useVisitorDetails();
     const unknownVisitors = (data ?? []).filter((visitor) => visitor.status === "unknown");
+    const deleteMutation = useDeleteVisitor();
 
     const isSelectionMode = selectedIds.length > 0;
 
@@ -137,6 +139,13 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, 
     const handleConvertToUser = (visitor: VisitorDTO, event: React.MouseEvent) => {
         event.stopPropagation();
         onConvertToUser?.(visitor);
+    };
+
+    const handleDeleteVisitor = (visitor: VisitorDTO, event: React.MouseEvent) => {
+        event.stopPropagation();
+        if (confirm(`Delete visitor "${visitor.id}"? This action cannot be undone.`)) {
+            deleteMutation.mutate(visitor.id);
+        }
     };
 
     return (
@@ -204,10 +213,22 @@ const VisitorTable = ({ selectedIds = [], onSelectionChange, isMerging = false, 
                                     <div className="flex justify-end gap-2">
                                         {!isSelectionMode && <VisitorDialogInfo visitor={visitor} />}
                                         {!isSelectionMode && !isConverted && (
-                                            <Button size="sm" className="gap-2" onClick={(e) => handleConvertToUser(visitor, e)}>
-                                                <UserPlus className="h-4 w-4" />
-                                                Convert to User
-                                            </Button>
+                                            <>
+                                                <Button size="sm" className="gap-2" onClick={(e) => handleConvertToUser(visitor, e)}>
+                                                    <UserPlus className="h-4 w-4" />
+                                                    Convert to User
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="destructive"
+                                                    className="gap-2"
+                                                    onClick={(e) => handleDeleteVisitor(visitor, e)}
+                                                    disabled={deleteMutation.isPending}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                    <span className="sr-only">Delete</span>
+                                                </Button>
+                                            </>
                                         )}
                                         {isConverted && (
                                             <Button size="sm" variant="outline" disabled className="gap-2">

@@ -133,6 +133,10 @@ const endPoints = {
         getAllVisitors: {
             url: "/unknown/persons",
             method: "GET"
+        },
+        deleteVisitor: {
+            url: "/unknown/:id",
+            method: "DELETE"
         }
     }
 
