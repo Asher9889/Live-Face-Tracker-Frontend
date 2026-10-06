@@ -6,6 +6,7 @@ import { cn } from '@/utils/cn';
 import { useRef } from 'react';
 import { useFrameState } from './hooks/useFrameState';
 import { useLiveKitStatus } from './hooks/useLiveKitStatus';
+import { useVideoFps } from './hooks/useVideoFps';
 
 type TLiveCamStatus = "online" | "offline" | "connecting" | "error";
 
@@ -26,6 +27,7 @@ const LiveCameraCard = ({ camera, onFullscreen }: LiveCameraCardProps) => {
   // describe, instead of a shared WebSocket topic.
   const { latest, hasData, bufferRef } = useFrameState(camera.code);
   const connection = useLiveKitStatus(camera.code);
+  const fps = useVideoFps(videoRef);
 
   const live = connection === "connected";
   const pending = connection === "connecting" || connection === "reconnecting" || connection === "idle";
@@ -54,6 +56,17 @@ const LiveCameraCard = ({ camera, onFullscreen }: LiveCameraCardProps) => {
           {live && (
             <span className="text-white/60">
               {hasData ? `${peopleCount} in view` : "no detections"}
+            </span>
+          )}
+          {live && (
+            <span
+              title="Frames per second rendered on this client"
+              className={cn(
+                "tabular font-medium",
+                fps >= 13 ? "text-emerald-300" : fps >= 7 ? "text-amber-400" : "text-red-400"
+              )}
+            >
+              {fps} FPS
             </span>
           )}
         </div>
